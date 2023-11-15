@@ -16,6 +16,7 @@ on:
       - "**.md"
       - "docs/**"
 
+jobs:
   build_apk:
     name: Build APK
     runs-on: ubuntu-latest
