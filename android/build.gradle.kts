@@ -3,12 +3,14 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.3'
+        classpath("com.android.tools.build:gradle:8.1.3")
     }
 }
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks {
+    register("clean", Delete::class) {
+        delete(rootProject.buildDir)
+    }
 }
