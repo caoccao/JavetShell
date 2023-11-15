@@ -1,11 +1,13 @@
 # Javet Shell
 
-Javet Shell is a simple console application that provides a Node.js flavored console interactions.
+Javet Shell is a simple console or Android application that provides a Node.js flavored console interactions.
 
 ## Features
 
-- Android + Linux + MacOS + Windows
+- [Android](android)
+- [Linux + MacOS + Windows](console)
 - Complete access to JVM
+- Debug with Chrome Dev Tools
 
 ## License
 
