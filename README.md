@@ -1,5 +1,7 @@
 # Javet Shell
 
+[![Android Build](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml/badge.svg)](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml)
+
 Javet Shell is a simple console or Android application that provides a Node.js flavored console interactions. It is a sample application of [Javet](https://github.com/caoccao/Javet).
 
 ## Features
