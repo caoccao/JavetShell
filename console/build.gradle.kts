@@ -30,6 +30,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
     implementation("com.caoccao.javet:javet:3.0.1")
 
+    // https://github.com/Kotlin/kotlinx-cli
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-cli-jvm
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
+
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
 

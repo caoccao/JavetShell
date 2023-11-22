@@ -16,29 +16,22 @@
 
 package com.caoccao.javet.shell
 
+import com.caoccao.javet.enums.JSRuntimeType
+import com.caoccao.javet.interop.V8Host
+import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.enums.ExitCode
-import com.caoccao.javet.shell.enums.RuntimeType
-import kotlinx.cli.ArgParser
-import kotlinx.cli.ArgType
-import kotlinx.cli.default
-import kotlin.system.exitProcess
 
-fun main(args: Array<String>) {
-    val argParser = ArgParser(Constants.Application.NAME)
-    val runtimeType by argParser.option(
-        ArgType.Choice<RuntimeType>(),
-        shortName = "r",
-        description = Constants.Application.DESCRIPTION
-    ).default(RuntimeType.V8)
-    argParser.parse(args)
-    val javetShell = JavetShell(runtimeType.value)
-    val exitCode =
-        try {
-            javetShell.run()
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            ExitCode.UnknownError
+class JavetShell(
+    private val jsRuntimeType: JSRuntimeType,
+) {
+    fun run(): ExitCode {
+        println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${jsRuntimeType.name} ${jsRuntimeType.version})")
+        println()
+        V8Host.getInstance(jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
+            val result = v8Runtime.getExecutor("1 + 1").executeInteger()
+            println("1 + 1 = $result")
         }
-    exitProcess(exitCode.code)
+        return ExitCode.NoError
+    }
 }
