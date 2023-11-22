@@ -21,16 +21,33 @@ import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.enums.ExitCode
+import com.caoccao.javet.values.V8Value
+import java.util.*
 
 class JavetShell(
     private val jsRuntimeType: JSRuntimeType,
 ) {
     fun run(): ExitCode {
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${jsRuntimeType.name} ${jsRuntimeType.version})")
+        println("Please input the script or '.exit' to exit.")
         println()
         V8Host.getInstance(jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
-            val result = v8Runtime.getExecutor("1 + 1").executeInteger()
-            println("1 + 1 = $result")
+            Scanner(System.`in`).use { scanner ->
+                while (true) {
+                    print("> ")
+                    val inputLine = scanner.nextLine()
+                    if (inputLine == ".exit") {
+                        break
+                    }
+                    try {
+                        v8Runtime.getExecutor(inputLine).execute<V8Value>().use { v8Value ->
+                            println(v8Value.toString())
+                        }
+                    } catch (t: Throwable) {
+                        println(t.message)
+                    }
+                }
+            }
         }
         return ExitCode.NoError
     }

@@ -44,14 +44,6 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 }
 
-afterEvaluate {
-    tasks.withType(JavaCompile::class) {
-        options.compilerArgs.add("-Xlint:unchecked")
-        options.compilerArgs.add("-Xlint:deprecation")
-    }
-}
-
-
 application {
     mainClass.set("${project.group}.MainKt")
 }
@@ -64,18 +56,6 @@ tasks.jar {
         from(zipTree(file.absoluteFile))
     }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<Test> {
-    systemProperty("file.encoding", "UTF-8")
-}
-
-tasks.withType<Javadoc> {
-    options.encoding = "UTF-8"
 }
 
 kotlin {
