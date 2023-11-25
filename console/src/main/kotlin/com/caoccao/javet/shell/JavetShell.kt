@@ -16,32 +16,68 @@
 
 package com.caoccao.javet.shell
 
+import com.caoccao.javet.enums.V8AwaitMode
 import com.caoccao.javet.exceptions.JavetCompilationException
 import com.caoccao.javet.exceptions.JavetExecutionException
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
+import com.caoccao.javet.interop.callback.JavetBuiltInModuleResolver
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
 import com.caoccao.javet.values.V8Value
+import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class JavetShell(
     private val options: Options,
-) {
-    fun run(): ExitCode {
+) : Runnable {
+    @Volatile
+    private var quitting = true
+    private var thread: Thread? = null
+    private var v8Runtime: V8Runtime? = null
+
+    fun execute(): ExitCode {
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
         println("Please input the script or press Ctrl+C to exit.")
         println()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
+            quitting = false
+            this.v8Runtime = v8Runtime
+            if (options.module) {
+                if (options.jsRuntimeType.isNode) {
+                    v8Runtime.v8ModuleResolver = JavetBuiltInModuleResolver()
+                    v8Runtime.getExecutor(
+                        """const process = require('process');
+                                    process.on('unhandledRejection', (reason, promise) => {
+                                        console.error();
+                                        console.error(reason.toString());
+                                        console.error();
+                                    });"""
+                    ).executeVoid()
+                } else {
+                    v8Runtime.setPromiseRejectCallback { _, _, value ->
+                        println()
+                        println(value.toString())
+                        println()
+                    }
+                }
+                thread = Thread(this)
+                thread?.start()
+            }
             Scanner(System.`in`).use { scanner ->
                 val sb = StringBuilder()
                 var isMultiline = false
-                while (true) {
+                while (!quitting) {
                     print(if (isMultiline) ">>> " else "> ")
                     try {
                         sb.appendLine(scanner.nextLine())
-                        v8Runtime.getExecutor(sb.toString()).setResourceName(options.scriptName).execute<V8Value>()
+                        v8Runtime
+                            .getExecutor(sb.toString())
+                            .setResourceName(File(options.scriptName).absolutePath)
+                            .setModule(options.module)
+                            .execute<V8Value>()
                             .use { v8Value ->
                                 println(v8Value.toString())
                             }
@@ -57,7 +93,7 @@ class JavetShell(
                         println()
                     } catch (e: NoSuchElementException) {
                         println()
-                        break
+                        quitting = true
                     } catch (t: Throwable) {
                         sb.clear()
                         isMultiline = false
@@ -67,7 +103,24 @@ class JavetShell(
                     }
                 }
             }
+            quitting = true
+            if (options.module) {
+                thread?.join()
+                thread = null
+            }
         }
+        this.v8Runtime = null
         return ExitCode.NoError
+    }
+
+    override fun run() {
+        while (!quitting) {
+            v8Runtime?.await(V8AwaitMode.RunOnce)
+            try {
+                TimeUnit.MILLISECONDS.sleep(Constants.Application.AWAIT_INTERVAL_IN_MILLIS)
+            } catch (t: Throwable) {
+                // Ignore
+            }
+        }
     }
 }

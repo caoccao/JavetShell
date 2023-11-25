@@ -31,7 +31,12 @@ fun main(args: Array<String>) {
         ArgType.Choice<RuntimeType>(),
         shortName = Constants.Options.JS_RUNTIME_TYPE_SHORT_NAME,
         description = Constants.Options.JS_RUNTIME_TYPE_DESCRIPTION,
-    ).default(RuntimeType.V8)
+    ).default(Constants.Options.JS_RUNTIME_TYPE_DEFAULT_TYPE)
+    val module by argParser.option(
+        ArgType.Boolean,
+        shortName = Constants.Options.MODULE_SHORT_NAME,
+        description = Constants.Options.MODULE_DESCRIPTION,
+    ).default(Constants.Options.MODULE_DEFAULT_VALUE)
     val scriptName by argParser.option(
         ArgType.String,
         shortName = Constants.Options.SCRIPT_NAME_SHORT_NAME,
@@ -40,12 +45,13 @@ fun main(args: Array<String>) {
     argParser.parse(args)
     val options = Options(
         runtimeType.value,
+        module,
         scriptName,
     )
     val javetShell = JavetShell(options)
     val exitCode =
         try {
-            javetShell.run()
+            javetShell.execute()
         } catch (t: Throwable) {
             t.printStackTrace()
             ExitCode.UnknownError
