@@ -17,6 +17,8 @@
 package com.caoccao.javet.shell
 
 import com.caoccao.javet.enums.JSRuntimeType
+import com.caoccao.javet.exceptions.JavetCompilationException
+import com.caoccao.javet.exceptions.JavetExecutionException
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
@@ -29,22 +31,38 @@ class JavetShell(
 ) {
     fun run(): ExitCode {
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${jsRuntimeType.name} ${jsRuntimeType.version})")
-        println("Please input the script or '.exit' to exit.")
+        println("Please input the script or press Ctrl+C to exit.")
         println()
         V8Host.getInstance(jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             Scanner(System.`in`).use { scanner ->
+                val sb = StringBuilder()
+                var isMultiline = false
                 while (true) {
-                    print("> ")
-                    val inputLine = scanner.nextLine()
-                    if (inputLine == ".exit") {
-                        break
-                    }
+                    print(if (isMultiline) ">>> " else "> ")
                     try {
-                        v8Runtime.getExecutor(inputLine).execute<V8Value>().use { v8Value ->
+                        sb.appendLine(scanner.nextLine())
+                        v8Runtime.getExecutor(sb.toString()).execute<V8Value>().use { v8Value ->
                             println(v8Value.toString())
                         }
+                        sb.clear()
+                        isMultiline = false
+                    } catch (e: JavetCompilationException) {
+                        isMultiline = true
+                    } catch (e: JavetExecutionException) {
+                        sb.clear()
+                        isMultiline = false
+                        println()
+                        println(e.scriptingError.toString())
+                        println()
+                    } catch (e: NoSuchElementException) {
+                        println()
+                        break
                     } catch (t: Throwable) {
+                        sb.clear()
+                        isMultiline = false
+                        println()
                         println(t.message)
+                        println()
                     }
                 }
             }
