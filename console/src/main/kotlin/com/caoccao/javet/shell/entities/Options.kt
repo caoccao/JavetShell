@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.shell.constants
+package com.caoccao.javet.shell.entities
 
-object Constants {
-    object Application {
-        const val NAME = "Javet Shell"
-        const val VERSION = "0.1.0"
-    }
-    object Options {
-        const val JS_RUNTIME_TYPE_DESCRIPTION = "JS runtime type"
-        const val JS_RUNTIME_TYPE_SHORT_NAME = "r"
-        const val SCRIPT_NAME_DEFAULT_VALUE = "main.js"
-        const val SCRIPT_NAME_DESCRIPTION = "Script name"
-        const val SCRIPT_NAME_SHORT_NAME = "n"
-    }
-}
+import com.caoccao.javet.enums.JSRuntimeType
+
+data class Options(
+    val jsRuntimeType: JSRuntimeType,
+    val scriptName: String,
+)

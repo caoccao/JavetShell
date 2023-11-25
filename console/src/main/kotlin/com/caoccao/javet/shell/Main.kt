@@ -17,6 +17,7 @@
 package com.caoccao.javet.shell
 
 import com.caoccao.javet.shell.constants.Constants
+import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
 import com.caoccao.javet.shell.enums.RuntimeType
 import kotlinx.cli.ArgParser
@@ -28,11 +29,20 @@ fun main(args: Array<String>) {
     val argParser = ArgParser(Constants.Application.NAME)
     val runtimeType by argParser.option(
         ArgType.Choice<RuntimeType>(),
-        shortName = "r",
-        description = Constants.Application.DESCRIPTION
+        shortName = Constants.Options.JS_RUNTIME_TYPE_SHORT_NAME,
+        description = Constants.Options.JS_RUNTIME_TYPE_DESCRIPTION,
     ).default(RuntimeType.V8)
+    val scriptName by argParser.option(
+        ArgType.String,
+        shortName = Constants.Options.SCRIPT_NAME_SHORT_NAME,
+        description = Constants.Options.SCRIPT_NAME_DESCRIPTION,
+    ).default(Constants.Options.SCRIPT_NAME_DEFAULT_VALUE)
     argParser.parse(args)
-    val javetShell = JavetShell(runtimeType.value)
+    val options = Options(
+        runtimeType.value,
+        scriptName,
+    )
+    val javetShell = JavetShell(options)
     val exitCode =
         try {
             javetShell.run()

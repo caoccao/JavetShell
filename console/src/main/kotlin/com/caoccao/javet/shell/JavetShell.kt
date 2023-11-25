@@ -16,24 +16,24 @@
 
 package com.caoccao.javet.shell
 
-import com.caoccao.javet.enums.JSRuntimeType
 import com.caoccao.javet.exceptions.JavetCompilationException
 import com.caoccao.javet.exceptions.JavetExecutionException
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
+import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
 import com.caoccao.javet.values.V8Value
 import java.util.*
 
 class JavetShell(
-    private val jsRuntimeType: JSRuntimeType,
+    private val options: Options,
 ) {
     fun run(): ExitCode {
-        println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${jsRuntimeType.name} ${jsRuntimeType.version})")
+        println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
         println("Please input the script or press Ctrl+C to exit.")
         println()
-        V8Host.getInstance(jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
+        V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             Scanner(System.`in`).use { scanner ->
                 val sb = StringBuilder()
                 var isMultiline = false
@@ -41,9 +41,10 @@ class JavetShell(
                     print(if (isMultiline) ">>> " else "> ")
                     try {
                         sb.appendLine(scanner.nextLine())
-                        v8Runtime.getExecutor(sb.toString()).execute<V8Value>().use { v8Value ->
-                            println(v8Value.toString())
-                        }
+                        v8Runtime.getExecutor(sb.toString()).setResourceName(options.scriptName).execute<V8Value>()
+                            .use { v8Value ->
+                                println(v8Value.toString())
+                            }
                         sb.clear()
                         isMultiline = false
                     } catch (e: JavetCompilationException) {
