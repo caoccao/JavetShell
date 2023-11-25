@@ -39,10 +39,11 @@ jobs:
 
     - name: Build the Artifact
       run: |
+        cd console
         gradle build --debug
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
         name: javet-shell-console
-        path: build/libs/*.jar
+        path: console/build/libs/*.jar
