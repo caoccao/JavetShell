@@ -36,7 +36,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.caoccao.javet:javet-android:3.0.2")
 //    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("junit:junit:5.10.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.21")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 

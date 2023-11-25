@@ -28,7 +28,7 @@ version = "0.1.0"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
-    implementation("com.caoccao.javet:javet:3.0.1")
+    implementation("com.caoccao.javet:javet:3.0.2")
 
     // https://github.com/Kotlin/kotlinx-cli
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-cli-jvm
