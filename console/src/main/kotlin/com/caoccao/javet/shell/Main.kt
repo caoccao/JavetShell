@@ -48,7 +48,11 @@ fun main(args: Array<String>) {
         module,
         scriptName,
     )
-    val javetShell = JavetShell(options)
+    val javetShell = if (options.jsRuntimeType.isNode) {
+        JavetShellNode(options)
+    } else {
+        JavetShellV8(options)
+    }
     val exitCode =
         try {
             javetShell.execute()

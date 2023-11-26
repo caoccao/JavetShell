@@ -21,7 +21,6 @@ import com.caoccao.javet.exceptions.JavetCompilationException
 import com.caoccao.javet.exceptions.JavetExecutionException
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
-import com.caoccao.javet.interop.callback.JavetBuiltInModuleResolver
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
@@ -30,15 +29,17 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class JavetShell(
-    private val options: Options,
+abstract class BaseJavetShell(
+    protected val options: Options,
 ) : Runnable {
+    protected var v8Runtime: V8Runtime? = null
+
     private var daemonThread: Thread? = null
 
     @Volatile
     private var running = false
 
-    private var v8Runtime: V8Runtime? = null
+    abstract val prompt: String
 
     fun execute(): ExitCode {
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
@@ -47,37 +48,14 @@ class JavetShell(
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             running = true
             this.v8Runtime = v8Runtime
-            if (options.jsRuntimeType.isNode) {
-                v8Runtime.v8ModuleResolver = JavetBuiltInModuleResolver()
-                v8Runtime.getExecutor(
-                    """const process = require('process');
-                                    process.on('unhandledRejection', (reason, promise) => {
-                                        console.error();
-                                        console.error(reason.toString());
-                                        console.error();
-                                    });"""
-                ).executeVoid()
-            } else {
-                v8Runtime.setPromiseRejectCallback { _, _, value ->
-                    println()
-                    println(value.toString())
-                    println()
-                }
-            }
+            registerPromiseRejectCallback()
             daemonThread = Thread(this)
             daemonThread?.start()
             Scanner(System.`in`).use { scanner ->
                 val sb = StringBuilder()
                 var isMultiline = false
                 while (running) {
-                    val prompt = if (isMultiline) {
-                        ">>> "
-                    } else if (options.jsRuntimeType.isNode) {
-                        "N > "
-                    } else {
-                        "V > "
-                    }
-                    print(prompt)
+                    print(if (isMultiline) ">>> " else prompt)
                     try {
                         sb.appendLine(scanner.nextLine())
                         v8Runtime
@@ -117,6 +95,8 @@ class JavetShell(
         this.v8Runtime = null
         return ExitCode.NoError
     }
+
+    protected abstract fun registerPromiseRejectCallback()
 
     override fun run() {
         while (running) {
