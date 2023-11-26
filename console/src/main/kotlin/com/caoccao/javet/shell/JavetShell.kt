@@ -33,9 +33,11 @@ import java.util.concurrent.TimeUnit
 class JavetShell(
     private val options: Options,
 ) : Runnable {
+    private var daemonThread: Thread? = null
+
     @Volatile
-    private var quitting = true
-    private var thread: Thread? = null
+    private var running = false
+
     private var v8Runtime: V8Runtime? = null
 
     fun execute(): ExitCode {
@@ -43,34 +45,39 @@ class JavetShell(
         println("Please input the script or press Ctrl+C to exit.")
         println()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
-            quitting = false
+            running = true
             this.v8Runtime = v8Runtime
-            if (options.module) {
-                if (options.jsRuntimeType.isNode) {
-                    v8Runtime.v8ModuleResolver = JavetBuiltInModuleResolver()
-                    v8Runtime.getExecutor(
-                        """const process = require('process');
+            if (options.jsRuntimeType.isNode) {
+                v8Runtime.v8ModuleResolver = JavetBuiltInModuleResolver()
+                v8Runtime.getExecutor(
+                    """const process = require('process');
                                     process.on('unhandledRejection', (reason, promise) => {
                                         console.error();
                                         console.error(reason.toString());
                                         console.error();
                                     });"""
-                    ).executeVoid()
-                } else {
-                    v8Runtime.setPromiseRejectCallback { _, _, value ->
-                        println()
-                        println(value.toString())
-                        println()
-                    }
+                ).executeVoid()
+            } else {
+                v8Runtime.setPromiseRejectCallback { _, _, value ->
+                    println()
+                    println(value.toString())
+                    println()
                 }
-                thread = Thread(this)
-                thread?.start()
             }
+            daemonThread = Thread(this)
+            daemonThread?.start()
             Scanner(System.`in`).use { scanner ->
                 val sb = StringBuilder()
                 var isMultiline = false
-                while (!quitting) {
-                    print(if (isMultiline) ">>> " else "> ")
+                while (running) {
+                    val prompt = if (isMultiline) {
+                        ">>> "
+                    } else if (options.jsRuntimeType.isNode) {
+                        "N > "
+                    } else {
+                        "V > "
+                    }
+                    print(prompt)
                     try {
                         sb.appendLine(scanner.nextLine())
                         v8Runtime
@@ -93,7 +100,7 @@ class JavetShell(
                         println()
                     } catch (e: NoSuchElementException) {
                         println()
-                        quitting = true
+                        running = false
                     } catch (t: Throwable) {
                         sb.clear()
                         isMultiline = false
@@ -103,18 +110,16 @@ class JavetShell(
                     }
                 }
             }
-            quitting = true
-            if (options.module) {
-                thread?.join()
-                thread = null
-            }
+            running = false
+            daemonThread?.join()
+            daemonThread = null
         }
         this.v8Runtime = null
         return ExitCode.NoError
     }
 
     override fun run() {
-        while (!quitting) {
+        while (running) {
             v8Runtime?.await(V8AwaitMode.RunOnce)
             try {
                 TimeUnit.MILLISECONDS.sleep(Constants.Application.AWAIT_INTERVAL_IN_MILLIS)
