@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.shell
 
+import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.interop.callback.JavetBuiltInModuleResolver
 import com.caoccao.javet.shell.entities.Options
 
@@ -28,6 +29,10 @@ class JavetShellNode(
 
     override val prompt: String
         get() = "N > "
+
+    override fun createEventLoop(v8Runtime: V8Runtime, options: Options): BaseEventLoop {
+        return EventLoopNode(v8Runtime, options)
+    }
 
     override fun registerPromiseRejectCallback() {
         v8Runtime?.v8ModuleResolver = JavetBuiltInModuleResolver()

@@ -19,25 +19,8 @@ package com.caoccao.javet.shell
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.entities.Options
 
-class JavetShellV8(
+class EventLoopNode(
+    v8Runtime: V8Runtime,
     options: Options,
-) : BaseJavetShell(options) {
-    init {
-        assert(options.jsRuntimeType.isV8) { "JS runtime type must be V8." }
-    }
-
-    override val prompt: String
-        get() = "V > "
-
-    override fun createEventLoop(v8Runtime: V8Runtime, options: Options): BaseEventLoop {
-        return EventLoopV8(v8Runtime, options)
-    }
-
-    override fun registerPromiseRejectCallback() {
-        v8Runtime?.setPromiseRejectCallback { _, _, value ->
-            System.err.println()
-            System.err.println(value.toString())
-            System.err.println()
-        }
-    }
+) : BaseEventLoop(v8Runtime, options) {
 }
