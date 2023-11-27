@@ -14,6 +14,52 @@
  * limitations under the License.
  */
 
+import org.gradle.internal.os.OperatingSystem
+
+object Config {
+    const val GROUP_ID = "com.caoccao.javet"
+    const val NAME = "Javet Shell"
+    const val VERSION = Versions.JAVET_SHELL
+    const val URL = "https://github.com/caoccao/JavetShell"
+
+    object Projects {
+        // https://mvnrepository.com/artifact/org.antlr/antlr4
+        const val ANTLR4 = "org.antlr:antlr4:${Versions.ANTLR4}"
+
+        const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
+        const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
+        const val JAVET_LINUX_ARM64 = "com.caoccao.javet:javet-linux-arm64:${Versions.JAVET}"
+        const val JAVET_MACOS = "com.caoccao.javet:javet-macos:${Versions.JAVET}"
+
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+        const val JUNIT_JUPITER_API = "org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}"
+
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+        const val JUNIT_JUPITER_ENGINE = "org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}"
+
+        const val KOTLIN_STDLIB_JDK8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.KOTLIN_STDLIB_JDK8}"
+
+        // https://github.com/Kotlin/kotlinx-cli
+        // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-cli-jvm
+        const val KOTLINX_CLI = "org.jetbrains.kotlinx:kotlinx-cli:${Versions.KOTLINX_CLI}"
+
+        // https://mvnrepository.com/artifact/io.vertx/vertx-core
+        const val VERTX = "io.vertx:vertx-core:${Versions.VERTX}"
+    }
+
+    object Versions {
+        const val ANTLR4 = "4.13.1"
+        const val JAVENODE = "0.3.0"
+        const val JAVET = "3.0.2"
+        const val JAVET_SANITIZER = "0.3.0"
+        const val JAVET_SHELL = "0.1.0"
+        const val JUNIT = "5.10.1"
+        const val KOTLIN_STDLIB_JDK8 = "1.8.10"
+        const val KOTLINX_CLI = "0.3.6"
+        const val VERTX = "4.4.6"
+    }
+}
+
 plugins {
     application
     kotlin("jvm") version "1.9.20"
@@ -23,36 +69,35 @@ repositories {
     mavenCentral()
 }
 
-group = "com.caoccao.javet.shell"
-version = "0.1.0"
+group = Config.GROUP_ID
+version = Config.VERSION
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
-    implementation("com.caoccao.javet:javet:3.0.2")
-    implementation("com.caoccao.javet:javenode:0.3.0")
-    implementation("io.vertx:vertx-core:4.4.6")
+    implementation(Config.Projects.JAVENODE)
+    val os = OperatingSystem.current()
+    val cpuArch = System.getProperty("os.arch")
+    if (os.isMacOsX) {
+        implementation(Config.Projects.JAVET_MACOS)
+    } else if (os.isLinux && (cpuArch == "aarch64" || cpuArch == "arm64")) {
+        implementation(Config.Projects.JAVET_LINUX_ARM64)
+    } else {
+        implementation(Config.Projects.JAVET)
+    }
+    implementation(Config.Projects.KOTLIN_STDLIB_JDK8)
+    implementation(Config.Projects.KOTLINX_CLI)
+    implementation(Config.Projects.VERTX)
 
-    // https://github.com/Kotlin/kotlinx-cli
-    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-cli-jvm
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
-
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.1")
-
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation(Config.Projects.JUNIT_JUPITER_API)
+    testRuntimeOnly(Config.Projects.JUNIT_JUPITER_ENGINE)
 }
 
 application {
-    mainClass.set("${project.group}.MainKt")
+    mainClass.set("${project.group}.shell.MainKt")
 }
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "${project.group}.MainKt"
+        attributes["Main-Class"] = "${project.group}.shell.MainKt"
     }
     configurations["compileClasspath"].forEach { file: File ->
         from(zipTree(file.absoluteFile))
