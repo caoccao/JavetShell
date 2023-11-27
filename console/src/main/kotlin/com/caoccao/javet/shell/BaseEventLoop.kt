@@ -32,8 +32,12 @@ abstract class BaseEventLoop(
     @Volatile
     var running = false
 
+    init {
+        start()
+    }
+
     override fun close() {
-        // Do nothing
+        stop()
     }
 
     override fun isClosed(): Boolean = !running
@@ -49,13 +53,13 @@ abstract class BaseEventLoop(
         }
     }
 
-    open fun start() {
+    protected open fun start() {
         running = true
         daemonThread = Thread(this)
         daemonThread?.start()
     }
 
-    open fun stop() {
+    protected open fun stop() {
         running = false
         daemonThread?.join()
         daemonThread = null

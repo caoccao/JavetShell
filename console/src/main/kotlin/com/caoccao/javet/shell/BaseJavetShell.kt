@@ -44,7 +44,6 @@ abstract class BaseJavetShell(
             createEventLoop(v8Runtime, options).use { eventLoop ->
                 this.v8Runtime = v8Runtime
                 registerPromiseRejectCallback()
-                eventLoop.start()
                 Scanner(System.`in`).use { scanner ->
                     val sb = StringBuilder()
                     var isMultiline = false
@@ -83,7 +82,6 @@ abstract class BaseJavetShell(
                     }
 
                 }
-                eventLoop.stop()
                 this.v8Runtime = null
             }
         }
