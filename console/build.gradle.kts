@@ -30,6 +30,7 @@ object Config {
         const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
         const val JAVET_LINUX_ARM64 = "com.caoccao.javet:javet-linux-arm64:${Versions.JAVET}"
         const val JAVET_MACOS = "com.caoccao.javet:javet-macos:${Versions.JAVET}"
+        const val JAVET_SANITIZER = "com.caoccao.javet.sanitizer:javet-sanitizer:${Versions.JAVET_SANITIZER}"
 
         // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
         const val JUNIT_JUPITER_API = "org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}"
@@ -51,7 +52,7 @@ object Config {
         const val ANTLR4 = "4.13.1"
         const val JAVENODE = "0.3.0"
         const val JAVET = "3.0.2"
-        const val JAVET_SANITIZER = "0.3.0"
+        const val JAVET_SANITIZER = "0.2.0-antlr-4.13.1"
         const val JAVET_SHELL = "0.1.0"
         const val JUNIT = "5.10.1"
         const val KOTLIN_STDLIB_JDK8 = "1.8.10"
@@ -73,6 +74,7 @@ group = Config.GROUP_ID
 version = Config.VERSION
 
 dependencies {
+    implementation(Config.Projects.ANTLR4)
     implementation(Config.Projects.JAVENODE)
     val os = OperatingSystem.current()
     val cpuArch = System.getProperty("os.arch")
@@ -83,6 +85,7 @@ dependencies {
     } else {
         implementation(Config.Projects.JAVET)
     }
+    implementation(Config.Projects.JAVET_SANITIZER)
     implementation(Config.Projects.KOTLIN_STDLIB_JDK8)
     implementation(Config.Projects.KOTLINX_CLI)
     implementation(Config.Projects.VERTX)
