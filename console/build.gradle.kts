@@ -30,6 +30,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
     implementation("com.caoccao.javet:javet:3.0.2")
     implementation("com.caoccao.javet:javenode:0.3.0")
+    implementation("io.vertx:vertx-core:4.4.6")
 
     // https://github.com/Kotlin/kotlinx-cli
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-cli-jvm

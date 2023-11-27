@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.shell
+package com.caoccao.javet.shell.utils
 
-import com.caoccao.javet.interop.V8Runtime
-import com.caoccao.javet.shell.entities.Options
+import com.caoccao.javet.interfaces.IJavetLogger
 
-class EventLoopNode(
-    v8Runtime: V8Runtime,
-    options: Options,
-) : BaseEventLoop(v8Runtime, options) {
-    // Node.js has its own event loop.
+class JavetShellLogger : IJavetLogger {
+    override fun debug(message: String?) {
+        println(message)
+    }
+
+    override fun error(message: String?) {
+        System.err.println(message)
+    }
+
+    override fun error(message: String?, cause: Throwable?) {
+        System.err.println(message)
+        cause?.printStackTrace(System.err)
+    }
+
+    override fun info(message: String?) {
+        println(message)
+    }
+
+    override fun warn(message: String?) {
+        println(message)
+    }
 }

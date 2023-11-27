@@ -17,10 +17,28 @@
 package com.caoccao.javet.shell
 
 import com.caoccao.javet.interop.V8Runtime
+import com.caoccao.javet.javenode.JNEventLoop
+import com.caoccao.javet.javenode.enums.JNModuleType
 import com.caoccao.javet.shell.entities.Options
 
 class EventLoopV8(
     v8Runtime: V8Runtime,
     options: Options,
 ) : BaseEventLoop(v8Runtime, options) {
+    private var jnEventLoop: JNEventLoop? = null
+
+    override fun start() {
+        jnEventLoop = JNEventLoop(v8Runtime)
+        jnEventLoop?.loadStaticModules(
+            JNModuleType.Console,
+            JNModuleType.Timers,
+        )
+        super.start()
+    }
+
+    override fun stop() {
+        jnEventLoop?.await()
+        jnEventLoop = null
+        super.stop()
+    }
 }

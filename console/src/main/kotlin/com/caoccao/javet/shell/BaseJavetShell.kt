@@ -23,6 +23,7 @@ import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
+import com.caoccao.javet.shell.utils.JavetShellLogger
 import com.caoccao.javet.values.V8Value
 import java.io.File
 import java.util.*
@@ -41,6 +42,7 @@ abstract class BaseJavetShell(
         println("Please input the script or press Ctrl+C to exit.")
         println()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
+            v8Runtime.logger = JavetShellLogger()
             createEventLoop(v8Runtime, options).use { eventLoop ->
                 this.v8Runtime = v8Runtime
                 registerPromiseRejectCallback()
