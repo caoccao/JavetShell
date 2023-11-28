@@ -22,7 +22,7 @@ Refer to this [page](android) for details.
 
 ### Console
 
-- Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml).
+- Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml) on Linux or Windows.
 - Run `java -jar javet-shell-x.x.x.jar`
 
 ```shell
@@ -37,4 +37,4 @@ Refer to this [page](console) for details.
 
 ## License
 
-[APACHE LICENSE, VERSION 2.0](https://github.com/caoccao/Javet/blob/main/LICENSE)
+[APACHE LICENSE, VERSION 2.0](LICENSE)
