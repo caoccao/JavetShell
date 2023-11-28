@@ -35,9 +35,9 @@ class JavetShellV8(
 
     override fun registerPromiseRejectCallback() {
         v8Runtime?.setPromiseRejectCallback { _, _, value ->
-            System.err.println()
-            System.err.println(value.toString())
-            System.err.println()
+            println()
+            println(value.toString())
+            println()
         }
     }
 }

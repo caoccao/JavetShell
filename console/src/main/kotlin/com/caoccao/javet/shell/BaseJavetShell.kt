@@ -20,6 +20,9 @@ import com.caoccao.javet.exceptions.JavetCompilationException
 import com.caoccao.javet.exceptions.JavetExecutionException
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
+import com.caoccao.javet.sanitizer.antlr.JavaScriptParser
+import com.caoccao.javet.sanitizer.exceptions.JavetSanitizerException
+import com.caoccao.javet.sanitizer.parsers.JavaScriptStatementListParser
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
@@ -48,25 +51,67 @@ abstract class BaseJavetShell(
                 registerPromiseRejectCallback()
                 Scanner(System.`in`).use { scanner ->
                     val sb = StringBuilder()
+                    var isESM = false
                     var isMultiline = false
+                    var isBlockCompleted = false
                     while (eventLoop.running) {
                         print(if (isMultiline) ">>> " else prompt)
                         try {
-                            sb.appendLine(scanner.nextLine())
-                            v8Runtime
-                                .getExecutor(sb.toString())
-                                .setResourceName(File(options.scriptName).absolutePath)
-                                .setModule(options.module)
-                                .execute<V8Value>()
-                                .use { v8Value ->
-                                    println(v8Value.toString())
+                            val line = scanner.nextLine()
+                            sb.appendLine(line)
+                            isBlockCompleted = line.isNullOrEmpty()
+                            val codeString = sb.toString()
+                            if (!codeString.isNullOrEmpty()) {
+                                if (!isESM) {
+                                    val parser = if (isBlockCompleted) {
+                                        try {
+                                            JavaScriptStatementListParser(codeString).parse()
+                                        } catch (e: JavetSanitizerException) {
+                                            null
+                                        }
+                                    } else {
+                                        JavaScriptStatementListParser(codeString).parse()
+                                    }
+                                    val context = parser?.javaScriptStatementParsers?.first()?.context
+                                    if (context != null && context.childCount > 0) {
+                                        isESM = context.getChild(0) is JavaScriptParser.ImportStatementContext
+                                    }
                                 }
-                            sb.clear()
+                                if (isESM && isBlockCompleted) {
+                                    v8Runtime
+                                        .getExecutor(codeString)
+                                        .setResourceName(File(options.scriptName).absolutePath)
+                                        .setModule(true)
+                                        .execute<V8Value>()
+                                        .use { v8Value ->
+                                            println(v8Value.toString())
+                                        }
+                                } else {
+                                    v8Runtime
+                                        .getExecutor(codeString)
+                                        .setResourceName(File(options.scriptName).absolutePath)
+                                        .execute<V8Value>()
+                                        .use { v8Value ->
+                                            println(v8Value.toString())
+                                        }
+                                }
+                            }
                             isMultiline = false
+                        } catch (e: JavetSanitizerException) {
+                            if (isBlockCompleted) {
+                                println()
+                                println(e.message)
+                                println()
+                            }
+                            isMultiline = !isBlockCompleted
                         } catch (e: JavetCompilationException) {
-                            isMultiline = true
+                            if (isBlockCompleted) {
+                                println()
+                                println(e.scriptingError.toString())
+                                println()
+                            }
+                            isMultiline = !isBlockCompleted
                         } catch (e: JavetExecutionException) {
-                            sb.clear()
                             isMultiline = false
                             println()
                             println(e.scriptingError.toString())
@@ -75,11 +120,18 @@ abstract class BaseJavetShell(
                             println()
                             eventLoop.running = false
                         } catch (t: Throwable) {
-                            sb.clear()
                             isMultiline = false
                             println()
                             println(t.message)
                             println()
+                        } finally {
+                            if (!isMultiline) {
+                                sb.clear()
+                            }
+                            if (isBlockCompleted) {
+                                isESM = false
+                            }
+                            isBlockCompleted = false
                         }
                     }
 

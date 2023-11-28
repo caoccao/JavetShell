@@ -20,6 +20,5 @@ import com.caoccao.javet.enums.JSRuntimeType
 
 data class Options(
     val jsRuntimeType: JSRuntimeType,
-    val module: Boolean,
     val scriptName: String,
 )

@@ -27,7 +27,6 @@ Javet Shell is a simple console or Android application that provides a Node.js f
 Usage: Javet Shell options_list
 Options:
     --runtimeType, -r [V8] -> JS runtime type { Value should be one of [node, v8] }
-    --module, -m [false] -> Module
     --scriptName, -s [main.js] -> Script name { String }
     --help, -h -> Usage info
 ```

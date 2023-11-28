@@ -29,9 +29,6 @@ object Constants {
         val JS_RUNTIME_TYPE_DEFAULT_TYPE = RuntimeType.V8
         const val JS_RUNTIME_TYPE_DESCRIPTION = "JS runtime type"
         const val JS_RUNTIME_TYPE_SHORT_NAME = "r"
-        const val MODULE_DEFAULT_VALUE = false
-        const val MODULE_DESCRIPTION = "Module"
-        const val MODULE_SHORT_NAME = "m"
         const val SCRIPT_NAME_DEFAULT_VALUE = "main.js"
         const val SCRIPT_NAME_DESCRIPTION = "Script name"
         const val SCRIPT_NAME_SHORT_NAME = "s"

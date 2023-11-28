@@ -24,12 +24,12 @@ class JavetShellLogger : IJavetLogger {
     }
 
     override fun error(message: String?) {
-        System.err.println(message)
+        println(message)
     }
 
     override fun error(message: String?, cause: Throwable?) {
-        System.err.println(message)
-        cause?.printStackTrace(System.err)
+        println(message)
+        cause?.printStackTrace(System.out)
     }
 
     override fun info(message: String?) {

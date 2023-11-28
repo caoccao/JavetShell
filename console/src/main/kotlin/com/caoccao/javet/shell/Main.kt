@@ -23,6 +23,8 @@ import com.caoccao.javet.shell.enums.RuntimeType
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -32,11 +34,6 @@ fun main(args: Array<String>) {
         shortName = Constants.Options.JS_RUNTIME_TYPE_SHORT_NAME,
         description = Constants.Options.JS_RUNTIME_TYPE_DESCRIPTION,
     ).default(Constants.Options.JS_RUNTIME_TYPE_DEFAULT_TYPE)
-    val module by argParser.option(
-        ArgType.Boolean,
-        shortName = Constants.Options.MODULE_SHORT_NAME,
-        description = Constants.Options.MODULE_DESCRIPTION,
-    ).default(Constants.Options.MODULE_DEFAULT_VALUE)
     val scriptName by argParser.option(
         ArgType.String,
         shortName = Constants.Options.SCRIPT_NAME_SHORT_NAME,
@@ -45,20 +42,24 @@ fun main(args: Array<String>) {
     argParser.parse(args)
     val options = Options(
         runtimeType.value,
-        module,
         scriptName,
     )
-    val javetShell = if (options.jsRuntimeType.isNode) {
-        JavetShellNode(options)
-    } else {
-        JavetShellV8(options)
-    }
-    val exitCode =
-        try {
-            javetShell.execute()
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            ExitCode.UnknownError
+    ByteArrayOutputStream().use { byteArrayOutputStream ->
+        PrintStream(byteArrayOutputStream).use { printStream ->
+            System.setErr(printStream)
+            val javetShell = if (options.jsRuntimeType.isNode) {
+                JavetShellNode(options)
+            } else {
+                JavetShellV8(options)
+            }
+            val exitCode =
+                try {
+                    javetShell.execute()
+                } catch (t: Throwable) {
+                    t.printStackTrace()
+                    ExitCode.UnknownError
+                }
+            exitProcess(exitCode.code)
         }
-    exitProcess(exitCode.code)
+    }
 }
