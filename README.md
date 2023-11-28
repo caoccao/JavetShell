@@ -2,7 +2,7 @@
 
 [![Android Build](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml/badge.svg)](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml) [![Console Build](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml/badge.svg)](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml)
 
-Javet Shell is a simple console or Android application that provides a Node.js flavored console interactions. It is a sample application of [Javet](https://github.com/caoccao/Javet).
+Javet Shell is a console or Android application that provides Node.js flavored console interactions. It is a sample application of [Javet](https://github.com/caoccao/Javet).
 
 ## Features
 
@@ -11,12 +11,14 @@ Javet Shell is a simple console or Android application that provides a Node.js f
 - Complete access to JVM
 - Debug with Chrome Dev Tools
 
-## Usage
+## Quick Start
 
 ### Android
 
 - Download the apk file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml).
 - Install the apk file.
+
+Refer to this [page](android/README.md) for details.
 
 ### Console
 
@@ -30,6 +32,8 @@ Options:
     --scriptName, -s [main.js] -> Script name { String }
     --help, -h -> Usage info
 ```
+
+Refer to this [page](console/README.md) for details.
 
 ## License
 
