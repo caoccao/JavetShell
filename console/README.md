@@ -7,7 +7,22 @@ Javet Shell Console is a console application that provides a Node.js flavored co
 Run `java -jar javet-shell-x.x.x.jar -r node` to activate the Node.js mode.
 
 ```js
-N > // TODO
+N > 1 + 1
+2
+N > let a = 1; let b = 2; a + b
+3
+N > setTimeout(() => console.log('\nMessage from setTimeout'), 1000)
+6
+N >
+Message from setTimeout
+
+undefined
+N > import * as fs from 'node:fs'
+>>> console.log(fs.existsSync('/abc'));
+>>>
+false
+[object Promise]
+N >
 ```
 
 ## V8 Mode
