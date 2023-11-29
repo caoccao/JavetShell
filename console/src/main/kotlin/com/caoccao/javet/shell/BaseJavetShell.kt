@@ -77,24 +77,14 @@ abstract class BaseJavetShell(
                                         isESM = context.getChild(0) is JavaScriptParser.ImportStatementContext
                                     }
                                 }
-                                if (isESM && isBlockCompleted) {
-                                    v8Runtime
-                                        .getExecutor(codeString)
-                                        .setResourceName(File(options.scriptName).absolutePath)
-                                        .setModule(true)
-                                        .execute<V8Value>()
-                                        .use { v8Value ->
-                                            println(v8Value.toString())
-                                        }
-                                } else {
-                                    v8Runtime
-                                        .getExecutor(codeString)
-                                        .setResourceName(File(options.scriptName).absolutePath)
-                                        .execute<V8Value>()
-                                        .use { v8Value ->
-                                            println(v8Value.toString())
-                                        }
-                                }
+                                v8Runtime
+                                    .getExecutor(codeString)
+                                    .setResourceName(File(options.scriptName).absolutePath)
+                                    .setModule(isESM && isBlockCompleted)
+                                    .execute<V8Value>()
+                                    .use { v8Value ->
+                                        println(v8Value.toString())
+                                    }
                             }
                             isMultiline = false
                         } catch (e: JavetSanitizerException) {
