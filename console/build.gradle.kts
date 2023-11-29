@@ -38,6 +38,7 @@ object Config {
         // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
         const val JUNIT_JUPITER_ENGINE = "org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}"
 
+        // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib-jdk8
         const val KOTLIN_STDLIB_JDK8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.KOTLIN_STDLIB_JDK8}"
 
         // https://github.com/Kotlin/kotlinx-cli
@@ -55,15 +56,15 @@ object Config {
         const val JAVET_SANITIZER = "0.2.0-antlr-4.13.1"
         const val JAVET_SHELL = "0.1.0"
         const val JUNIT = "5.10.1"
-        const val KOTLIN_STDLIB_JDK8 = "1.8.10"
+        const val KOTLIN_STDLIB_JDK8 = "1.9.21"
         const val KOTLINX_CLI = "0.3.6"
-        const val VERTX = "4.4.6"
+        const val VERTX = "4.5.0"
     }
 }
 
 plugins {
     application
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
 }
 
 repositories {
