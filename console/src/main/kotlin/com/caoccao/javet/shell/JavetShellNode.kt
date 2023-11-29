@@ -23,6 +23,15 @@ import com.caoccao.javet.shell.entities.Options
 class JavetShellNode(
     options: Options,
 ) : BaseJavetShell(options) {
+    companion object {
+        const val PROMISE_REJECT_CALLBACK_CODE_STRING = """const process = require('process');
+                process.on('unhandledRejection', (reason, promise) => {
+                    console.error();
+                    console.error(reason.toString());
+                    console.error();
+                });"""
+    }
+
     init {
         assert(options.jsRuntimeType.isNode) { "JS runtime type must be Node." }
     }
@@ -36,13 +45,6 @@ class JavetShellNode(
 
     override fun registerPromiseRejectCallback(v8Runtime: V8Runtime) {
         v8Runtime.v8ModuleResolver = JavetBuiltInModuleResolver()
-        v8Runtime.getExecutor(
-            """const process = require('process');
-                                    process.on('unhandledRejection', (reason, promise) => {
-                                        console.error();
-                                        console.error(reason.toString());
-                                        console.error();
-                                    });"""
-        )?.executeVoid()
+        v8Runtime.getExecutor(PROMISE_REJECT_CALLBACK_CODE_STRING).executeVoid()
     }
 }
