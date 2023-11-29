@@ -33,8 +33,8 @@ class JavetShellV8(
         return EventLoopV8(v8Runtime, options)
     }
 
-    override fun registerPromiseRejectCallback() {
-        v8Runtime?.setPromiseRejectCallback { _, _, value ->
+    override fun registerPromiseRejectCallback(v8Runtime: V8Runtime) {
+        v8Runtime.setPromiseRejectCallback { _, _, value ->
             println()
             println(value.toString())
             println()

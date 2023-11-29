@@ -34,9 +34,9 @@ class JavetShellNode(
         return EventLoopNode(v8Runtime, options)
     }
 
-    override fun registerPromiseRejectCallback() {
-        v8Runtime?.v8ModuleResolver = JavetBuiltInModuleResolver()
-        v8Runtime?.getExecutor(
+    override fun registerPromiseRejectCallback(v8Runtime: V8Runtime) {
+        v8Runtime.v8ModuleResolver = JavetBuiltInModuleResolver()
+        v8Runtime.getExecutor(
             """const process = require('process');
                                     process.on('unhandledRejection', (reason, promise) => {
                                         console.error();

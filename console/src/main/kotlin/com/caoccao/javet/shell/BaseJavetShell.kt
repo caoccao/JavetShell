@@ -34,8 +34,6 @@ import java.util.*
 abstract class BaseJavetShell(
     protected val options: Options,
 ) {
-    protected var v8Runtime: V8Runtime? = null
-
     protected abstract val prompt: String
 
     protected abstract fun createEventLoop(v8Runtime: V8Runtime, options: Options): BaseEventLoop
@@ -47,8 +45,7 @@ abstract class BaseJavetShell(
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             v8Runtime.logger = JavetShellLogger()
             createEventLoop(v8Runtime, options).use { eventLoop ->
-                this.v8Runtime = v8Runtime
-                registerPromiseRejectCallback()
+                registerPromiseRejectCallback(v8Runtime)
                 Scanner(System.`in`).use { scanner ->
                     val sb = StringBuilder()
                     var isESM = false
@@ -126,11 +123,10 @@ abstract class BaseJavetShell(
                     }
 
                 }
-                this.v8Runtime = null
             }
         }
         return ExitCode.NoError
     }
 
-    protected abstract fun registerPromiseRejectCallback()
+    protected abstract fun registerPromiseRejectCallback(v8Runtime: V8Runtime)
 }
