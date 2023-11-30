@@ -28,6 +28,7 @@ import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
 import com.caoccao.javet.shell.utils.JavetShellLogger
 import com.caoccao.javet.values.V8Value
+import sun.misc.Signal
 import java.io.File
 import java.util.*
 
@@ -49,14 +50,22 @@ abstract class BaseJavetShell(
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             v8Runtime.logger = JavetShellLogger()
             createEventLoop(v8Runtime, options).use { eventLoop ->
+                Signal.handle(Signal("INT")) {
+                    // Stop the event loop after Ctrl+C is pressed.
+                    eventLoop.running = false
+                }
                 registerPromiseRejectCallback(v8Runtime)
                 Scanner(System.`in`).use { scanner ->
                     val sb = StringBuilder()
                     var isESM = false
                     var isMultiline = false
                     var isBlockCompleted = false
+                    var isEmptyLine = false
                     while (eventLoop.running) {
-                        print(if (isMultiline) ">>> " else prompt)
+                        if (!isEmptyLine) {
+                            print(if (isMultiline) ">>> " else prompt)
+                        }
+                        isEmptyLine = false
                         try {
                             val line = scanner.nextLine()
                             sb.appendLine(line)
@@ -108,8 +117,7 @@ abstract class BaseJavetShell(
                             println(e.scriptingError.toString())
                             println()
                         } catch (e: NoSuchElementException) {
-                            println()
-                            eventLoop.running = false
+                            isEmptyLine = true
                         } catch (t: Throwable) {
                             isMultiline = false
                             println()
