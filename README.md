@@ -22,9 +22,6 @@ Refer to this [page](android) for details.
 
 ### Console
 
-- Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml) on Linux or Windows.
-- Run `java -jar javet-shell-x.x.x.jar`
-
 ```shell
 Usage: Javet Shell options_list
 Options:
@@ -32,6 +29,16 @@ Options:
     --scriptName, -s [main.js] -> Script name { String }
     --help, -h -> Usage info
 ```
+
+#### Manual
+
+- Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml) on Linux or Windows.
+- Run `java -jar javet-shell-x.x.x.jar`
+
+#### Docker
+
+- Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:latest`
+- Run `java -jar javet-shell-x.x.x.jar`
 
 Refer to this [page](console) for details.
 
