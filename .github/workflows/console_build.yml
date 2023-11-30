@@ -16,6 +16,9 @@ on:
       - "**.md"
       - "docs/**"
 
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
 jobs:
   build_jar:
     name: Build Jar
@@ -47,3 +50,14 @@ jobs:
       with:
         name: javet-shell-console
         path: console/build/libs/*.jar
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Docker Build and Push
+      run: |
+        docker build -t ${{ env.DOCKERHUB_USERNAME }}/javet-shell:latest -f docker/console.Dockerfile .
+        docker push ${{ env.DOCKERHUB_USERNAME }}/javet-shell:latest
