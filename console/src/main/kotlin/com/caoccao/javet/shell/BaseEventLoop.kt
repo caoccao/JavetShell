@@ -51,6 +51,7 @@ abstract class BaseEventLoop(
                 // Ignore
             }
         }
+        v8Runtime.lowMemoryNotification()
     }
 
     protected open fun start() {

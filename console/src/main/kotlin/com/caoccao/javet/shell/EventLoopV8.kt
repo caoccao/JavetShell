@@ -38,6 +38,10 @@ class EventLoopV8(
 
     override fun stop() {
         jnEventLoop?.await()
+        jnEventLoop?.unloadStaticModules(
+            JNModuleType.Console,
+            JNModuleType.Timers,
+        )
         jnEventLoop = null
         super.stop()
     }

@@ -47,15 +47,15 @@ abstract class BaseJavetShell(
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
         println(PROMPT_STRING)
         println()
-        V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
-            v8Runtime.logger = JavetShellLogger()
-            createEventLoop(v8Runtime, options).use { eventLoop ->
-                Signal.handle(Signal("INT")) {
-                    // Stop the event loop after Ctrl+C is pressed.
-                    eventLoop.running = false
-                }
-                registerPromiseRejectCallback(v8Runtime)
-                Scanner(System.`in`).use { scanner ->
+        Scanner(System.`in`).use { scanner ->
+            V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
+                v8Runtime.logger = JavetShellLogger()
+                createEventLoop(v8Runtime, options).use { eventLoop ->
+                    Signal.handle(Signal("INT")) {
+                        // Stop the event loop after Ctrl+C is pressed.
+                        eventLoop.running = false
+                    }
+                    registerPromiseRejectCallback(v8Runtime)
                     val sb = StringBuilder()
                     var isESM = false
                     var isMultiline = false
@@ -133,7 +133,6 @@ abstract class BaseJavetShell(
                             isBlockCompleted = false
                         }
                     }
-
                 }
             }
         }
