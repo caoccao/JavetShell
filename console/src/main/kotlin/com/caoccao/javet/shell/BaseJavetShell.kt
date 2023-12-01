@@ -30,7 +30,7 @@ import com.caoccao.javet.shell.utils.JavetShellLogger
 import com.caoccao.javet.values.V8Value
 import sun.misc.Signal
 import java.io.File
-import java.util.*
+import java.io.IOError
 
 abstract class BaseJavetShell(
     protected val options: Options,
@@ -47,29 +47,34 @@ abstract class BaseJavetShell(
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
         println(PROMPT_STRING)
         println()
-        Scanner(System.`in`).use { scanner ->
-            V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
-                v8Runtime.logger = JavetShellLogger()
-                createEventLoop(v8Runtime, options).use { eventLoop ->
-                    Signal.handle(Signal("INT")) {
-                        // Stop the event loop after Ctrl+C is pressed.
-                        eventLoop.running = false
-                    }
-                    registerPromiseRejectCallback(v8Runtime)
-                    val sb = StringBuilder()
-                    var isESM = false
-                    var isMultiline = false
-                    var isBlockCompleted = false
-                    var isEmptyLine = false
-                    while (eventLoop.running) {
-                        if (!isEmptyLine) {
-                            print(if (isMultiline) ">>> " else prompt)
-                        }
-                        isEmptyLine = false
-                        try {
-                            val line = scanner.nextLine()
+        V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
+            v8Runtime.logger = JavetShellLogger()
+            createEventLoop(v8Runtime, options).use { eventLoop ->
+                Signal.handle(Signal("INT")) {
+                    // Stop the event loop after Ctrl+C is pressed.
+                    eventLoop.running = false
+                }
+                registerPromiseRejectCallback(v8Runtime)
+                val console = System.console()
+                val sb = StringBuilder()
+                var isESM = false
+                var isMultiline = false
+                var isBlockCompleted = false
+                while (eventLoop.running) {
+                    print(if (isMultiline) ">>> " else prompt)
+                    try {
+                        val line = console.readLine()
+                        if (line == null) {
+                            println()
+                            eventLoop.running = false
+                            break
+                        } else if (line.isBlank()) {
+                            isBlockCompleted = true
+                        } else {
+                            isBlockCompleted = false
                             sb.appendLine(line)
-                            isBlockCompleted = line.isNullOrEmpty()
+                        }
+                        if (eventLoop.running) {
                             val codeString = sb.toString()
                             if (!codeString.isNullOrEmpty()) {
                                 if (!isESM) {
@@ -97,41 +102,46 @@ abstract class BaseJavetShell(
                                     }
                             }
                             isMultiline = false
-                        } catch (e: JavetSanitizerException) {
-                            if (isBlockCompleted) {
-                                println()
-                                println(e.message)
-                                println()
-                            }
-                            isMultiline = !isBlockCompleted
-                        } catch (e: JavetCompilationException) {
-                            if (isBlockCompleted) {
-                                println()
-                                println(e.scriptingError.toString())
-                                println()
-                            }
-                            isMultiline = !isBlockCompleted
-                        } catch (e: JavetExecutionException) {
-                            isMultiline = false
+                        } else {
+                            println()
+                            break
+                        }
+                    } catch (e: JavetSanitizerException) {
+                        if (isBlockCompleted) {
+                            println()
+                            println(e.message)
+                            println()
+                        }
+                        isMultiline = !isBlockCompleted
+                    } catch (e: JavetCompilationException) {
+                        if (isBlockCompleted) {
                             println()
                             println(e.scriptingError.toString())
                             println()
-                        } catch (e: NoSuchElementException) {
-                            isEmptyLine = true
-                        } catch (t: Throwable) {
-                            isMultiline = false
-                            println()
-                            println(t.message)
-                            println()
-                        } finally {
-                            if (!isMultiline) {
-                                sb.clear()
-                            }
-                            if (isBlockCompleted) {
-                                isESM = false
-                            }
-                            isBlockCompleted = false
                         }
+                        isMultiline = !isBlockCompleted
+                    } catch (e: JavetExecutionException) {
+                        isMultiline = false
+                        println()
+                        println(e.scriptingError.toString())
+                        println()
+                    } catch (e: IOError) {
+                        println()
+                        eventLoop.running = false
+                        break
+                    } catch (t: Throwable) {
+                        isMultiline = false
+                        println()
+                        println(t.message)
+                        println()
+                    } finally {
+                        if (!isMultiline) {
+                            sb.clear()
+                        }
+                        if (isBlockCompleted) {
+                            isESM = false
+                        }
+                        isBlockCompleted = false
                     }
                 }
             }
