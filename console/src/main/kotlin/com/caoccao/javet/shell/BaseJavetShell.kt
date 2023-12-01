@@ -76,7 +76,7 @@ abstract class BaseJavetShell(
                         }
                         if (eventLoop.running) {
                             val codeString = sb.toString()
-                            if (!codeString.isNullOrEmpty()) {
+                            if (codeString.isNotEmpty()) {
                                 if (!isESM) {
                                     val parser = if (isBlockCompleted) {
                                         try {
