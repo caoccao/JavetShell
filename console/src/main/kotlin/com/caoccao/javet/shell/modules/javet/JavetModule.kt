@@ -58,7 +58,11 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
             if (v8Value is V8ValueString) {
                 val packageName = v8Value.value
                 if (packageName.isNotBlank()) {
-                    return JavetPackage(v8Runtime, packageName).toV8Value()
+                    @Suppress("DEPRECATION")
+                    val namedPackage = Package.getPackage(packageName)
+                    if (namedPackage != null) {
+                        return JavetPackage(v8Runtime, namedPackage).toV8Value()
+                    }
                 }
             }
         }
