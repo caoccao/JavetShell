@@ -20,20 +20,19 @@ import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.javenode.enums.JNModuleType
 import com.caoccao.javet.shell.entities.Options
+import com.caoccao.javet.shell.enums.JavetShellModuleType
 
 class EventLoopV8(
     v8Runtime: V8Runtime,
     options: Options,
 ) : BaseEventLoop(v8Runtime, options) {
-    private var jnEventLoop: JNEventLoop? = null
-
     override fun start() {
-        jnEventLoop = JNEventLoop(v8Runtime)
+        super.start()
         jnEventLoop?.loadStaticModules(
             JNModuleType.Console,
             JNModuleType.Timers,
+            JavetShellModuleType.Javet,
         )
-        super.start()
     }
 
     override fun stop() {
@@ -41,8 +40,8 @@ class EventLoopV8(
         jnEventLoop?.unloadStaticModules(
             JNModuleType.Console,
             JNModuleType.Timers,
+            JavetShellModuleType.Javet,
         )
-        jnEventLoop = null
         super.stop()
     }
 }

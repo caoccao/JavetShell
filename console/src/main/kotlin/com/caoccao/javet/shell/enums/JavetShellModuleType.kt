@@ -14,28 +14,11 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.shell
+package com.caoccao.javet.shell.enums
 
-import com.caoccao.javet.interop.V8Runtime
-import com.caoccao.javet.shell.entities.Options
-import com.caoccao.javet.shell.enums.JavetShellModuleType
+import com.caoccao.javet.javenode.enums.JNModuleType
+import com.caoccao.javet.shell.modules.javet.JavetModule
 
-class EventLoopNode(
-    v8Runtime: V8Runtime,
-    options: Options,
-) : BaseEventLoop(v8Runtime, options) {
-    override fun start() {
-        super.start()
-        jnEventLoop?.loadStaticModules(
-            JavetShellModuleType.Javet,
-        )
-    }
-
-    override fun stop() {
-        jnEventLoop?.await()
-        jnEventLoop?.unloadStaticModules(
-            JavetShellModuleType.Javet,
-        )
-        super.stop()
-    }
+object JavetShellModuleType {
+    val Javet = JNModuleType(JavetModule.NAME, ::JavetModule)
 }

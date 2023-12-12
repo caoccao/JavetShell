@@ -19,6 +19,7 @@ package com.caoccao.javet.shell
 import com.caoccao.javet.enums.V8AwaitMode
 import com.caoccao.javet.interfaces.IJavetClosable
 import com.caoccao.javet.interop.V8Runtime
+import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import java.util.concurrent.TimeUnit
@@ -28,6 +29,7 @@ abstract class BaseEventLoop(
     protected val options: Options,
 ) : IJavetClosable, Runnable {
     private var daemonThread: Thread? = null
+    protected var jnEventLoop: JNEventLoop? = null
 
     @Volatile
     var running = false
@@ -55,6 +57,7 @@ abstract class BaseEventLoop(
     }
 
     protected open fun start() {
+        jnEventLoop = JNEventLoop(v8Runtime)
         running = true
         daemonThread = Thread(this)
         daemonThread?.start()
@@ -64,5 +67,6 @@ abstract class BaseEventLoop(
         running = false
         daemonThread?.join()
         daemonThread = null
+        jnEventLoop = null
     }
 }
