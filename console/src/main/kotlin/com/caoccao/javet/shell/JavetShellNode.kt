@@ -24,7 +24,7 @@ class JavetShellNode(
     options: Options,
 ) : BaseJavetShell(options) {
     companion object {
-        const val PROMISE_REJECT_CALLBACK_CODE_STRING = """const process = require('process');
+        const val PROMISE_REJECT_CALLBACK_CODE_STRING = """
                 process.on('unhandledRejection', (reason, promise) => {
                     console.error();
                     console.error(reason.toString());
