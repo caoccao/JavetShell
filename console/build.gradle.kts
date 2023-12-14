@@ -91,8 +91,7 @@ dependencies {
     implementation(Config.Projects.KOTLINX_CLI)
     implementation(Config.Projects.VERTX)
 
-    testImplementation(Config.Projects.JUNIT_JUPITER_API)
-    testRuntimeOnly(Config.Projects.JUNIT_JUPITER_ENGINE)
+    testImplementation(kotlin("test"))
 }
 
 application {
@@ -107,6 +106,10 @@ tasks.jar {
         from(zipTree(file.absoluteFile))
     }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 kotlin {
