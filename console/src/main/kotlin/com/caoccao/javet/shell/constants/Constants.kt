@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.shell.constants
 
+import com.caoccao.javet.interop.converters.JavetProxyConverter
 import com.caoccao.javet.shell.enums.RuntimeType
 
 object Constants {
@@ -32,5 +33,9 @@ object Constants {
         const val SCRIPT_NAME_DEFAULT_VALUE = "main.js"
         const val SCRIPT_NAME_DESCRIPTION = "Script name"
         const val SCRIPT_NAME_SHORT_NAME = "s"
+    }
+
+    object Javet {
+        val JAVET_PROXY_CONVERTER = JavetProxyConverter()
     }
 }

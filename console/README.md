@@ -40,6 +40,25 @@ V >
 Message from setTimeout
 ```
 
+## Access to JVM
+
+JavetShell exposes the whole JVM to the console and gives you a real interactive Java REPL.
+
+```js
+V > let java = javet.getPackage('java')
+undefined
+V > let sb = new java.lang.StringBuilder()
+undefined
+V > sb.append(123)
+123
+V > sb.append('abc')
+123abc
+V > sb
+123abc
+V > java.util.Locale.US.toString()
+en_US
+```
+
 ## API
 
 - Node.js Mode

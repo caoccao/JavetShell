@@ -49,6 +49,7 @@ abstract class BaseJavetShell(
         println()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             v8Runtime.logger = JavetShellLogger()
+            v8Runtime.converter = Constants.Javet.JAVET_PROXY_CONVERTER
             createEventLoop(v8Runtime, options).use { eventLoop ->
                 Signal.handle(Signal("INT")) {
                     // Stop the event loop after Ctrl+C is pressed.

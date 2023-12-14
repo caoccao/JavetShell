@@ -16,7 +16,6 @@
 
 package com.caoccao.javet.shell.modules.javet
 
-import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.interop.callback.IJavetDirectCallable
 import com.caoccao.javet.interop.callback.JavetCallbackContext
 import com.caoccao.javet.interop.callback.JavetCallbackType
@@ -53,11 +52,11 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
         }
     }
 
-    fun getPackage(v8Values: Array<V8Value>): V8Value {
-        if (v8Values.isNotEmpty()) {
+    fun getPackage(v8Values: Array<V8Value>?): V8Value {
+        if (!v8Values.isNullOrEmpty()) {
             val v8Value = v8Values[0]
             if (v8Value is V8ValueString) {
-                return createJavetPackage(v8Runtime, v8Value.value)
+                return BaseJavetPackage.createPackageOrClass(v8Runtime, v8Value.value)
             }
         }
         return v8Runtime.createV8ValueUndefined()
@@ -66,17 +65,4 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
     override fun unbind() {
         v8Runtime.globalObject.delete(NAME)
     }
-}
-
-fun createJavetPackage(v8Runtime: V8Runtime, packageName: String): V8Value {
-    if (packageName.isNotBlank()) {
-        @Suppress("DEPRECATION")
-        val namedPackage = Package.getPackage(packageName)
-        if (namedPackage != null) {
-            return JavetPackage(v8Runtime, namedPackage).toV8Value()
-        } else {
-            return JavetVirtualPackage(v8Runtime, packageName).toV8Value()
-        }
-    }
-    return v8Runtime.createV8ValueUndefined()
 }

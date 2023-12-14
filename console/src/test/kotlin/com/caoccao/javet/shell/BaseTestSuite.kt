@@ -42,6 +42,9 @@ open class BaseTestSuite {
             V8Host.getNodeInstance().createV8Runtime(),
             V8Host.getV8Instance().createV8Runtime(),
         )
+        v8Runtimes.forEach { v8Runtime ->
+            v8Runtime.converter = Constants.Javet.JAVET_PROXY_CONVERTER
+        }
         eventLoops = v8Runtimes.map { v8Runtime ->
             val option = Options(v8Runtime.jsRuntimeType, Constants.Options.SCRIPT_NAME_DEFAULT_VALUE)
             if (v8Runtime.jsRuntimeType.isNode) {

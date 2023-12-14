@@ -16,68 +16,45 @@
 
 package com.caoccao.javet.shell.modules.javet
 
+import com.caoccao.javet.interfaces.IJavetUniFunction
 import com.caoccao.javet.interop.V8Runtime
-import com.caoccao.javet.interop.callback.IJavetDirectCallable
-import com.caoccao.javet.interop.callback.JavetCallbackContext
-import com.caoccao.javet.interop.callback.JavetCallbackType
-import com.caoccao.javet.javenode.modules.BaseJNCallable
 import com.caoccao.javet.values.V8Value
-import com.caoccao.javet.values.primitive.V8ValueString
 
 class JavetPackage(
     private val v8Runtime: V8Runtime,
     private val namedPackage: Package,
-) : BaseJNCallable(), IJavetDirectCallable {
-    override fun getCallbackContexts(): Array<JavetCallbackContext> {
-        if (javetCallbackContexts == null) {
-            javetCallbackContexts = arrayOf(
-                JavetCallbackContext(
-                    "getPackage",
-                    this, JavetCallbackType.DirectCallNoThisAndResult,
-                    IJavetDirectCallable.NoThisAndResult<Exception>(this::getPackage),
-                ),
-                JavetCallbackContext(
-                    "name",
-                    this, JavetCallbackType.DirectCallGetterAndNoThis,
-                    IJavetDirectCallable.GetterAndNoThis<Exception>(this::getName)
-                ),
-                JavetCallbackContext(
-                    "sealed",
-                    this, JavetCallbackType.DirectCallGetterAndNoThis,
-                    IJavetDirectCallable.GetterAndNoThis<Exception>(this::isSealed),
-                ),
-                JavetCallbackContext(
-                    "valid",
-                    this, JavetCallbackType.DirectCallGetterAndNoThis,
-                    IJavetDirectCallable.GetterAndNoThis<Exception>(this::isValid),
-                ),
+) : BaseJavetPackage(v8Runtime) {
+    override fun getName() = namedPackage.name
+
+    override fun isValid() = true
+
+    override fun proxyGetStringGetterMap(): Map<String, IJavetUniFunction<String, out V8Value, Exception>> {
+        if (stringGetterMap == null) {
+            stringGetterMap = super.proxyGetStringGetterMap()
+            stringGetterMap = stringGetterMap!! + mapOf(
+                ".implementationTitle" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueString(namedPackage.implementationTitle)
+                },
+                ".implementationVersion" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueString(namedPackage.implementationVersion)
+                },
+                ".implementationVendor" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueString(namedPackage.implementationVendor)
+                },
+                ".sealed" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueBoolean(namedPackage.isSealed)
+                },
+                ".specificationTitle" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueString(namedPackage.specificationTitle)
+                },
+                ".specificationVersion" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueString(namedPackage.specificationVersion)
+                },
+                ".specificationVendor" to IJavetUniFunction<String, V8Value, Exception> { _: String ->
+                    v8Runtime.createV8ValueString(namedPackage.specificationVendor)
+                },
             )
         }
-        return javetCallbackContexts
-    }
-
-    fun getName() = v8Runtime.createV8ValueString(namedPackage.name)
-
-    fun getPackage(v8Values: Array<V8Value>): V8Value {
-        if (v8Values.isNotEmpty()) {
-            val v8Value = v8Values[0]
-            if (v8Value is V8ValueString) {
-                val childPackageName = v8Value.value
-                if (childPackageName.isNotBlank()) {
-                    return createJavetPackage(v8Runtime, "${namedPackage.name}.$childPackageName")
-                }
-            }
-        }
-        return v8Runtime.createV8ValueUndefined()
-    }
-
-    fun isSealed() = v8Runtime.createV8ValueBoolean(namedPackage.isSealed)
-
-    fun isValid() = v8Runtime.createV8ValueBoolean(true)
-
-    fun toV8Value(): V8Value {
-        val v8ValueObject = v8Runtime.createV8ValueObject()
-        v8ValueObject.bind(this)
-        return v8ValueObject
+        return stringGetterMap!!
     }
 }

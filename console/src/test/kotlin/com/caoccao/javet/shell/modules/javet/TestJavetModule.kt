@@ -28,16 +28,35 @@ class TestJavetModule : BaseTestSuite() {
         v8Runtimes.forEach { v8Runtime ->
             // Test java
             v8Runtime.getExecutor("let java = javet.getPackage('java')").executeVoid()
-            assertFalse(v8Runtime.getExecutor("java.valid").executeBoolean())
-            assertEquals("java", v8Runtime.getExecutor("java.name").executeString())
+            assertFalse(v8Runtime.getExecutor("java['.valid']").executeBoolean())
+            assertEquals("java", v8Runtime.getExecutor("java['.name']").executeString())
             // Test java.util
-            v8Runtime.getExecutor("let javaUtil = java.getPackage('util')").executeVoid()
-            assertTrue(v8Runtime.getExecutor("javaUtil.valid").executeBoolean())
-            assertTrue(v8Runtime.getExecutor("javaUtil.sealed").executeBoolean())
-            assertEquals("java.util", v8Runtime.getExecutor("javaUtil.name").executeString())
+            v8Runtime.getExecutor("let javaUtil = java.util").executeVoid()
+            assertTrue(v8Runtime.getExecutor("javaUtil['.valid']").executeBoolean())
+            assertTrue(v8Runtime.getExecutor("javaUtil['.sealed']").executeBoolean())
+            assertEquals("java.util", v8Runtime.getExecutor("javaUtil['.name']").executeString())
+            // Test java.lang.Object
+            assertEquals(Object::class.java, v8Runtime.getExecutor("java.lang.Object").executeObject());
+            // Test java.lang.StringBuilder
+            assertEquals(
+                "a1",
+                v8Runtime.getExecutor(
+                    "let sb = new java.lang.StringBuilder(); sb.append('a').append(1); sb.toString();"
+                ).executeString()
+            )
+            // Test invalid cases
+            assertTrue(
+                v8Runtime.getExecutor("javet.getPackage('abc.def')").executeObject<Any>() is JavetVirtualPackage
+            );
+            assertTrue(v8Runtime.getExecutor("java.lang.abcdefg").executeObject<Any>() is JavetVirtualPackage);
+            assertEquals(
+                "java.io,java.lang,java.math,java.net,java.nio,java.security,java.text,java.time,java.util",
+                v8Runtime.getExecutor("java['.getPackages']().map(p => p['.name']).sort().join(',')").executeString()
+            )
             // Clean up
             v8Runtime.getExecutor("java = undefined").executeVoid()
             v8Runtime.getExecutor("javaUtil = undefined").executeVoid()
+            v8Runtime.getExecutor("sb = undefined").executeVoid()
         }
     }
 }
