@@ -24,9 +24,9 @@ import com.caoccao.javet.javenode.modules.BaseJNCallable
 import com.caoccao.javet.values.V8Value
 import com.caoccao.javet.values.primitive.V8ValueString
 
-class JavetPackage(
+class JavetVirtualPackage(
     private val v8Runtime: V8Runtime,
-    private val namedPackage: Package,
+    private val packageName: String,
 ) : BaseJNCallable(), IJavetDirectCallable {
     override fun getCallbackContexts(): Array<JavetCallbackContext> {
         if (javetCallbackContexts == null) {
@@ -42,11 +42,6 @@ class JavetPackage(
                     IJavetDirectCallable.GetterAndNoThis<Exception>(this::getName)
                 ),
                 JavetCallbackContext(
-                    "sealed",
-                    this, JavetCallbackType.DirectCallGetterAndNoThis,
-                    IJavetDirectCallable.GetterAndNoThis<Exception>(this::isSealed),
-                ),
-                JavetCallbackContext(
                     "valid",
                     this, JavetCallbackType.DirectCallGetterAndNoThis,
                     IJavetDirectCallable.GetterAndNoThis<Exception>(this::isValid),
@@ -56,7 +51,7 @@ class JavetPackage(
         return javetCallbackContexts
     }
 
-    fun getName() = v8Runtime.createV8ValueString(namedPackage.name)
+    fun getName() = v8Runtime.createV8ValueString(packageName)
 
     fun getPackage(v8Values: Array<V8Value>): V8Value {
         if (v8Values.isNotEmpty()) {
@@ -64,16 +59,14 @@ class JavetPackage(
             if (v8Value is V8ValueString) {
                 val childPackageName = v8Value.value
                 if (childPackageName.isNotBlank()) {
-                    return createJavetPackage(v8Runtime, "${namedPackage.name}.$childPackageName")
+                    return createJavetPackage(v8Runtime, "$packageName.$childPackageName")
                 }
             }
         }
         return v8Runtime.createV8ValueUndefined()
     }
 
-    fun isSealed() = v8Runtime.createV8ValueBoolean(namedPackage.isSealed)
-
-    fun isValid() = v8Runtime.createV8ValueBoolean(true)
+    fun isValid() = v8Runtime.createV8ValueBoolean(false)
 
     fun toV8Value(): V8Value {
         val v8ValueObject = v8Runtime.createV8ValueObject()
