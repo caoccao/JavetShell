@@ -20,8 +20,8 @@ env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
-  build_jar:
-    name: Build Jar
+  build_jar_for_linux_and_windows_x86_64:
+    name: Build Jar for Linux and Windows x86_64
     runs-on: ubuntu-latest
 
     steps:
@@ -48,7 +48,7 @@ jobs:
     - name: Upload the Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: javet-shell-console
+        name: javet-shell-console-linux-windows_x86-64
         path: console/build/libs/*.jar
 
     - name: Login to Docker Hub
@@ -61,3 +61,34 @@ jobs:
       run: |
         docker build -t ${{ env.DOCKERHUB_USERNAME }}/javet-shell:latest -f docker/console.Dockerfile .
         docker push ${{ env.DOCKERHUB_USERNAME }}/javet-shell:latest
+
+  build_jar_for_macos:
+    name: Build Jar for MacOS
+    runs-on: macos-latest
+
+    steps:
+
+    - name: Checkout the code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: corretto
+        java-version: 17
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.2
+
+    - name: Build the Artifact
+      run: |
+        cd console
+        gradle build --debug
+
+    - name: Upload the Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: javet-shell-console-macos
+        path: console/build/libs/*.jar
