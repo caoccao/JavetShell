@@ -57,6 +57,8 @@ V > sb
 123abc
 V > java.util.Locale.US.toString()
 en_US
+V > java['.getPackages']().map(p => p['.name']).join(', ')
+java.math, java.nio, java.lang, java.text, java.io, java.util, java.time, java.security, java.net
 ```
 
 ## API
