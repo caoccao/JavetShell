@@ -16,13 +16,34 @@
 
 package com.caoccao.javet.shell.modules.javet
 
+import com.caoccao.javet.annotations.V8Function
+import com.caoccao.javet.interfaces.IJavetAnonymous
 import com.caoccao.javet.shell.BaseTestSuite
+import com.caoccao.javet.shell.mock.MockDynamicClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+
 class TestJavetModule : BaseTestSuite() {
+    @Test
+    fun testDynamicObject() {
+        v8Runtimes.forEach { v8Runtime ->
+            val anonymous = object : IJavetAnonymous {
+                @V8Function
+                @Throws(Exception::class)
+                fun test(dynamicClass: MockDynamicClass) {
+                    assertEquals(3, dynamicClass.add(1, 2), "Add should work.")
+                    (dynamicClass as AutoCloseable).close()
+                }
+            }
+            v8Runtime.globalObject.set("a", anonymous);
+            v8Runtime.getExecutor("a.test({ add: (a, b) => a + b });").executeVoid();
+            v8Runtime.globalObject.delete("a");
+        }
+    }
+
     @Test
     fun testGC() {
         v8Runtimes.forEach { v8Runtime ->
@@ -83,11 +104,11 @@ class TestJavetModule : BaseTestSuite() {
         v8Runtimes.forEach { v8Runtime ->
             v8Runtime.getExecutor(
                 """let java = javet.package.java;
-                        | let count = 0;
-                        | let thread = new java.lang.Thread(() => { count++; });
-                        | thread.start();
-                        | thread;
-                    """.trimMargin()
+                    | let count = 0;
+                    | let thread = new java.lang.Thread(() => { count++; });
+                    | thread.start();
+                    | thread;
+                """.trimMargin()
             ).executeObject<Thread>().join()
             assertEquals(
                 1,
