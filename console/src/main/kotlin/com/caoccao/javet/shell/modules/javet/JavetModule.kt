@@ -21,9 +21,9 @@ import com.caoccao.javet.interop.callback.JavetCallbackContext
 import com.caoccao.javet.interop.callback.JavetCallbackType
 import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.javenode.modules.BaseJNModule
+import com.caoccao.javet.sanitizer.utils.StringUtils
 import com.caoccao.javet.shell.enums.JavetShellModuleType
 import com.caoccao.javet.values.V8Value
-import com.caoccao.javet.values.primitive.V8ValueString
 
 class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirectCallable {
     companion object {
@@ -36,9 +36,9 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
         if (javetCallbackContexts == null) {
             javetCallbackContexts = arrayOf(
                 JavetCallbackContext(
-                    "getPackage",
-                    this, JavetCallbackType.DirectCallNoThisAndResult,
-                    IJavetDirectCallable.NoThisAndResult<Exception>(this::getPackage),
+                    "package",
+                    this, JavetCallbackType.DirectCallGetterAndNoThis,
+                    IJavetDirectCallable.GetterAndNoThis<Exception>(this::getPackage),
                 )
             )
         }
@@ -52,14 +52,8 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
         }
     }
 
-    fun getPackage(v8Values: Array<V8Value>?): V8Value {
-        if (!v8Values.isNullOrEmpty()) {
-            val v8Value = v8Values[0]
-            if (v8Value is V8ValueString) {
-                return BaseJavetPackage.createPackageOrClass(v8Runtime, v8Value.value)
-            }
-        }
-        return v8Runtime.createV8ValueUndefined()
+    fun getPackage(): V8Value {
+        return JavetVirtualPackage(v8Runtime, StringUtils.EMPTY).toV8Value()
     }
 
     override fun unbind() {

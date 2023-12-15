@@ -27,26 +27,6 @@ import com.caoccao.javet.values.V8Value
 import com.caoccao.javet.values.primitive.V8ValueString
 
 abstract class BaseJavetPackage(private val v8Runtime: V8Runtime) : BaseDirectProxyHandler(v8Runtime) {
-    companion object {
-        fun createPackageOrClass(v8Runtime: V8Runtime, name: String): V8Value {
-            if (name.isNotBlank()) {
-                try {
-                    val clazz = Class.forName(name)
-                    return Constants.Javet.JAVET_PROXY_CONVERTER.toV8Value(v8Runtime, clazz)
-                } catch (_: Throwable) {
-                }
-                @Suppress("DEPRECATION")
-                val namedPackage = Package.getPackage(name)
-                if (namedPackage != null) {
-                    return JavetPackage(v8Runtime, namedPackage).toV8Value()
-                } else {
-                    return JavetVirtualPackage(v8Runtime, name).toV8Value()
-                }
-            }
-            return v8Runtime.createV8ValueUndefined()
-        }
-    }
-
     abstract fun getName(): String
 
     abstract fun isValid(): Boolean
@@ -55,9 +35,21 @@ abstract class BaseJavetPackage(private val v8Runtime: V8Runtime) : BaseDirectPr
         var v8Value = super.proxyGet(target, property, receiver)
         if (v8Value.isUndefined) {
             if (property is V8ValueString) {
-                val name = property.value
-                if (name.isNotBlank()) {
-                    v8Value = createPackageOrClass(v8Runtime, "${getName()}.$name")
+                val childName = property.value
+                if (childName.isNotBlank()) {
+                    val name = if (getName().isBlank()) childName else "${getName()}.$childName"
+                    try {
+                        val clazz = Class.forName(name)
+                        v8Value = Constants.Javet.JAVET_PROXY_CONVERTER.toV8Value(v8Runtime, clazz)
+                    } catch (_: Throwable) {
+                        @Suppress("DEPRECATION")
+                        val namedPackage = Package.getPackage(name)
+                        if (namedPackage != null) {
+                            v8Value = JavetPackage(v8Runtime, namedPackage).toV8Value()
+                        } else {
+                            v8Value = JavetVirtualPackage(v8Runtime, name).toV8Value()
+                        }
+                    }
                 }
             }
         }

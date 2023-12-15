@@ -27,7 +27,7 @@ class TestJavetModule : BaseTestSuite() {
     fun testPackage() {
         v8Runtimes.forEach { v8Runtime ->
             // Test java
-            v8Runtime.getExecutor("let java = javet.getPackage('java')").executeVoid()
+            v8Runtime.getExecutor("let java = javet.package.java").executeVoid()
             assertFalse(v8Runtime.getExecutor("java['.valid']").executeBoolean())
             assertEquals("java", v8Runtime.getExecutor("java['.name']").executeString())
             // Test java.util
@@ -46,7 +46,7 @@ class TestJavetModule : BaseTestSuite() {
             )
             // Test invalid cases
             assertTrue(
-                v8Runtime.getExecutor("javet.getPackage('abc.def')").executeObject<Any>() is JavetVirtualPackage
+                v8Runtime.getExecutor("javet.package.abc.def").executeObject<Any>() is JavetVirtualPackage
             );
             assertTrue(v8Runtime.getExecutor("java.lang.abcdefg").executeObject<Any>() is JavetVirtualPackage);
             assertEquals(

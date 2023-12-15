@@ -45,7 +45,7 @@ Message from setTimeout
 JavetShell exposes the whole JVM to the console and gives you a real interactive Java REPL.
 
 ```js
-V > let java = javet.getPackage('java')
+V > let java = javet.package.java
 undefined
 V > let sb = new java.lang.StringBuilder()
 undefined
@@ -57,8 +57,8 @@ V > sb
 123abc
 V > java.util.Locale.US.toString()
 en_US
-V > java['.getPackages']().map(p => p['.name']).join(', ')
-java.math, java.nio, java.lang, java.text, java.io, java.util, java.time, java.security, java.net
+V > java['.getPackages']().map(p => p['.name']).sort().join(', ')
+java.io, java.lang, java.math, java.net, java.nio, java.security, java.text, java.time, java.util
 ```
 
 ## API
