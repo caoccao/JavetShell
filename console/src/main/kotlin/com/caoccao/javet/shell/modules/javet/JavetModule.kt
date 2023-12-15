@@ -23,7 +23,6 @@ import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.javenode.modules.BaseJNModule
 import com.caoccao.javet.sanitizer.utils.StringUtils
 import com.caoccao.javet.shell.enums.JavetShellModuleType
-import com.caoccao.javet.values.V8Value
 
 class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirectCallable {
     companion object {
@@ -36,10 +35,17 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
         if (javetCallbackContexts == null) {
             javetCallbackContexts = arrayOf(
                 JavetCallbackContext(
+                    "gc",
+                    this, JavetCallbackType.DirectCallNoThisAndNoResult,
+                    IJavetDirectCallable.NoThisAndNoResult<Exception> { v8Runtime.lowMemoryNotification() },
+                ),
+                JavetCallbackContext(
                     "package",
                     this, JavetCallbackType.DirectCallGetterAndNoThis,
-                    IJavetDirectCallable.GetterAndNoThis<Exception>(this::getPackage),
-                )
+                    IJavetDirectCallable.GetterAndNoThis<Exception> {
+                        JavetVirtualPackage(v8Runtime, StringUtils.EMPTY).toV8Value()
+                    },
+                ),
             )
         }
         return javetCallbackContexts
@@ -50,10 +56,6 @@ class JavetModule(eventLoop: JNEventLoop) : BaseJNModule(eventLoop), IJavetDirec
             bind(v8ValueObject)
             v8Runtime.globalObject.set(NAME, v8ValueObject)
         }
-    }
-
-    fun getPackage(): V8Value {
-        return JavetVirtualPackage(v8Runtime, StringUtils.EMPTY).toV8Value()
     }
 
     override fun unbind() {

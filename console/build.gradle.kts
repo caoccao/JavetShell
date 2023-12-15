@@ -26,6 +26,9 @@ object Config {
         // https://mvnrepository.com/artifact/org.antlr/antlr4
         const val ANTLR4 = "org.antlr:antlr4:${Versions.ANTLR4}"
 
+        // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+        const val BYTE_BUDDY = "net.bytebuddy:byte-buddy:${Versions.BYTE_BUDDY}"
+
         const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
         const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
         const val JAVET_LINUX_ARM64 = "com.caoccao.javet:javet-linux-arm64:${Versions.JAVET}"
@@ -51,6 +54,7 @@ object Config {
 
     object Versions {
         const val ANTLR4 = "4.13.1"
+        const val BYTE_BUDDY = "1.14.10"
         const val JAVENODE = "0.3.0"
         const val JAVET = "3.0.2"
         const val JAVET_SANITIZER = "0.2.0-antlr-4.13.1"
@@ -76,6 +80,7 @@ version = Config.VERSION
 
 dependencies {
     implementation(Config.Projects.ANTLR4)
+    implementation(Config.Projects.BYTE_BUDDY)
     implementation(Config.Projects.JAVENODE)
     val os = OperatingSystem.current()
     val cpuArch = System.getProperty("os.arch")

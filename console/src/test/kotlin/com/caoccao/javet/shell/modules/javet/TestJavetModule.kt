@@ -24,6 +24,19 @@ import kotlin.test.assertTrue
 
 class TestJavetModule : BaseTestSuite() {
     @Test
+    fun testGC() {
+        v8Runtimes.forEach { v8Runtime ->
+            val initialCallbackContextCount = v8Runtime.callbackContextCount
+            v8Runtime.globalObject.set("test", String::class.java)
+            assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
+            v8Runtime.globalObject.delete("test")
+            assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
+            v8Runtime.getExecutor("javet.gc()").executeVoid()
+            assertEquals(initialCallbackContextCount, v8Runtime.callbackContextCount)
+        }
+    }
+
+    @Test
     fun testPackage() {
         v8Runtimes.forEach { v8Runtime ->
             // Test java
@@ -37,13 +50,6 @@ class TestJavetModule : BaseTestSuite() {
             assertEquals("java.util", v8Runtime.getExecutor("javaUtil['.name']").executeString())
             // Test java.lang.Object
             assertEquals(Object::class.java, v8Runtime.getExecutor("java.lang.Object").executeObject());
-            // Test java.lang.StringBuilder
-            assertEquals(
-                "a1",
-                v8Runtime.getExecutor(
-                    "let sb = new java.lang.StringBuilder(); sb.append('a').append(1); sb.toString();"
-                ).executeString()
-            )
             // Test invalid cases
             assertTrue(
                 v8Runtime.getExecutor("javet.package.abc.def").executeObject<Any>() is JavetVirtualPackage
@@ -54,9 +60,40 @@ class TestJavetModule : BaseTestSuite() {
                 v8Runtime.getExecutor("java['.getPackages']().map(p => p['.name']).sort().join(',')").executeString()
             )
             // Clean up
-            v8Runtime.getExecutor("java = undefined").executeVoid()
-            v8Runtime.getExecutor("javaUtil = undefined").executeVoid()
-            v8Runtime.getExecutor("sb = undefined").executeVoid()
+            v8Runtime.getExecutor("java = undefined; javaUtil = undefined").executeVoid()
+        }
+    }
+
+    @Test
+    fun testStringBuilder() {
+        v8Runtimes.forEach { v8Runtime ->
+            v8Runtime.getExecutor("let java = javet.package.java").executeVoid()
+            assertEquals(
+                "a1",
+                v8Runtime.getExecutor(
+                    "let sb = new java.lang.StringBuilder(); sb.append('a').append(1); sb.toString();"
+                ).executeString()
+            )
+            v8Runtime.getExecutor("java = undefined; sb = undefined").executeVoid()
+        }
+    }
+
+    @Test
+    fun testThread() {
+        v8Runtimes.forEach { v8Runtime ->
+            v8Runtime.getExecutor(
+                """let java = javet.package.java;
+                        | let count = 0;
+                        | let thread = new java.lang.Thread(() => { count++; });
+                        | thread.start();
+                        | thread;
+                    """.trimMargin()
+            ).executeObject<Thread>().join()
+            assertEquals(
+                1,
+                v8Runtime.getExecutor("count").executeInteger()
+            )
+            v8Runtime.getExecutor("java = undefined; thread = undefined;").executeVoid()
         }
     }
 }

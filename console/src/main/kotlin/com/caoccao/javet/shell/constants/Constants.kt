@@ -17,6 +17,7 @@
 package com.caoccao.javet.shell.constants
 
 import com.caoccao.javet.interop.converters.JavetProxyConverter
+import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory
 import com.caoccao.javet.shell.enums.RuntimeType
 
 object Constants {
@@ -37,5 +38,9 @@ object Constants {
 
     object Javet {
         val JAVET_PROXY_CONVERTER = JavetProxyConverter()
+
+        init {
+            JAVET_PROXY_CONVERTER.config.setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance())
+        }
     }
 }

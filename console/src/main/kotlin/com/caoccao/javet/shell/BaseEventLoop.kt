@@ -49,8 +49,7 @@ abstract class BaseEventLoop(
             v8Runtime.await(V8AwaitMode.RunOnce)
             try {
                 TimeUnit.MILLISECONDS.sleep(Constants.Application.AWAIT_INTERVAL_IN_MILLIS)
-            } catch (t: Throwable) {
-                // Ignore
+            } catch (_: Throwable) {
             }
         }
         v8Runtime.lowMemoryNotification()
