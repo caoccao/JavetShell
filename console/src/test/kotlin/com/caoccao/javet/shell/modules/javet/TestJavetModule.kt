@@ -38,9 +38,9 @@ class TestJavetModule : BaseTestSuite() {
                     (dynamicClass as AutoCloseable).close()
                 }
             }
-            v8Runtime.globalObject.set("a", anonymous);
-            v8Runtime.getExecutor("a.test({ add: (a, b) => a + b });").executeVoid();
-            v8Runtime.globalObject.delete("a");
+            v8Runtime.globalObject.set("a", anonymous)
+            v8Runtime.getExecutor("a.test({ add: (a, b) => a + b });").executeVoid()
+            v8Runtime.globalObject.delete("a")
         }
     }
 
@@ -70,18 +70,18 @@ class TestJavetModule : BaseTestSuite() {
             assertTrue(v8Runtime.getExecutor("javaUtil['.sealed']").executeBoolean())
             assertEquals("java.util", v8Runtime.getExecutor("javaUtil['.name']").executeString())
             // Test java.lang.Object
-            assertEquals(Object::class.java, v8Runtime.getExecutor("java.lang.Object").executeObject());
+            assertEquals(Object::class.java, v8Runtime.getExecutor("java.lang.Object").executeObject())
             // Test invalid cases
             assertTrue(
                 v8Runtime.getExecutor("javet.package.abc.def").executeObject<Any>() is JavetVirtualPackage
-            );
-            assertTrue(v8Runtime.getExecutor("java.lang.abcdefg").executeObject<Any>() is JavetVirtualPackage);
+            )
+            assertTrue(v8Runtime.getExecutor("java.lang.abcdefg").executeObject<Any>() is JavetVirtualPackage)
             assertEquals(
                 "java.io,java.lang,java.math,java.net,java.nio,java.security,java.text,java.time,java.util",
                 v8Runtime.getExecutor("java['.getPackages']().map(p => p['.name']).sort().join(',')").executeString()
             )
             // Clean up
-            v8Runtime.getExecutor("java = undefined; javaUtil = undefined").executeVoid()
+            v8Runtime.getExecutor("java = undefined; javaUtil = undefined;").executeVoid()
         }
     }
 
@@ -95,7 +95,7 @@ class TestJavetModule : BaseTestSuite() {
                     "let sb = new java.lang.StringBuilder(); sb.append('a').append(1); sb.toString();"
                 ).executeString()
             )
-            v8Runtime.getExecutor("java = undefined; sb = undefined").executeVoid()
+            v8Runtime.getExecutor("java = undefined; sb = undefined;").executeVoid()
         }
     }
 
