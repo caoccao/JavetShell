@@ -32,6 +32,8 @@ open class BaseTestSuite {
         eventLoops.forEach(BaseEventLoop::close)
         v8Runtimes.forEach { v8Runtime ->
             v8Runtime.lowMemoryNotification()
+            System.gc()
+            System.runFinalization()
             v8Runtime.close()
         }
     }

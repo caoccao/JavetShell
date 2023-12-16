@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.interop.proxy;import com.caoccao.javet.interfaces.IJavetLogger;
+package com.caoccao.javet.interop.proxy;
+
+import com.caoccao.javet.interfaces.IJavetLogger;
 import com.caoccao.javet.utils.JavetDefaultLogger;
 import com.caoccao.javet.utils.JavetResourceUtils;
 import com.caoccao.javet.values.V8Value;
@@ -268,6 +270,11 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
         @Override
         public void close() throws Exception {
             super.close();
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            close();
         }
 
         @Override
