@@ -32,6 +32,9 @@ abstract class BaseEventLoop(
     protected var jnEventLoop: JNEventLoop? = null
 
     @Volatile
+    var gcScheduled = false
+
+    @Volatile
     var running = false
 
     init {
@@ -47,23 +50,34 @@ abstract class BaseEventLoop(
     override fun run() {
         while (running) {
             v8Runtime.await(V8AwaitMode.RunOnce)
-            try {
-                TimeUnit.MILLISECONDS.sleep(Constants.Application.AWAIT_INTERVAL_IN_MILLIS)
-            } catch (_: Throwable) {
+            if (gcScheduled) {
+                System.gc()
+                System.runFinalization()
+                v8Runtime.lowMemoryNotification()
+                gcScheduled = false
+            } else {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(Constants.Application.AWAIT_INTERVAL_IN_MILLIS)
+                } catch (_: Throwable) {
+                }
             }
         }
+        System.gc()
+        System.runFinalization()
         v8Runtime.lowMemoryNotification()
     }
 
     protected open fun start() {
         jnEventLoop = JNEventLoop(v8Runtime)
         running = true
+        gcScheduled = false
         daemonThread = Thread(this)
         daemonThread?.start()
     }
 
     protected open fun stop() {
         running = false
+        gcScheduled = false
         daemonThread?.join()
         daemonThread = null
         jnEventLoop = null

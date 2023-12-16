@@ -63,6 +63,7 @@ abstract class BaseJavetShell(
                     var isBlockCompleted = false
                     while (eventLoop.running) {
                         print(if (isMultiline) ">>> " else prompt)
+                        eventLoop.gcScheduled = true
                         try {
                             val line = scanner.nextLine()
                             if (line == null) {
