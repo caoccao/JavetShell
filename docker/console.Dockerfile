@@ -19,8 +19,9 @@ FROM ubuntu:22.04
 
 RUN apt-get update -y
 RUN apt-get install -y openjdk-17-jdk
-RUN apt-get install -y zip
+RUN apt-get install -y unzip zip
 
 WORKDIR /
 COPY ./console/build/libs/javet-shell-0.1.0.jar .
-RUN zip -d ./javet-shell-0.1.0.jar *.dll *.dylib
+RUN unzip ./javet-shell-0.1.0.jar '*.so'
+RUN zip -d ./javet-shell-0.1.0.jar *.dll *.dylib *.so

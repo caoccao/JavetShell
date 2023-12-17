@@ -33,12 +33,12 @@ Options:
 #### Manual
 
 - Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml) on Linux or Windows.
-- Run `java -jar javet-shell-${version}.jar`
+- Run `java -jar javet-shell-0.1.0.jar`
 
 #### Docker
 
 - Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:latest`
-- Run `java -jar javet-shell-${version}.jar`
+- Run `java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-0.1.0.jar`
 
 Refer to this [page](console) for details.
 
