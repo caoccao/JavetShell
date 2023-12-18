@@ -19,6 +19,9 @@
 
 FROM gradle:8.2-jdk17-jammy as build
 
+ENV VERSION=0.1.0
+
+# Preparation
 RUN apt-get update -y
 RUN apt-get install -y unzip zip wget
 
@@ -30,7 +33,6 @@ COPY ./console/ .
 RUN gradle build
 
 # Build Cache
-ENV VERSION=0.1.0
 WORKDIR /console/build/libs
 RUN unzip ./javet-shell-${VERSION}.jar '*.so'
 RUN zip -d ./javet-shell-${VERSION}.jar *.dll *.dylib *.so

@@ -18,7 +18,7 @@ Javet Shell is a console or Android application that provides Node.js flavored c
 - Download the apk file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml).
 - Install the apk file.
 
-Refer to this [page](android) for details.
+Please refer to this [page](android) for details.
 
 ### Console
 
@@ -40,7 +40,7 @@ Options:
 - Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:latest`
 - Run `./javet-shell-node.sh` or `./javet-shell-v8.sh`
 
-Refer to this [page](console) for details.
+Please refer to this [page](console) for details.
 
 ## License
 
