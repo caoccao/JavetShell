@@ -17,19 +17,10 @@
 #   docker build -t sjtucaocao/javet-shell:latest --platform linux/amd64 -f docker/console.Dockerfile .
 #   docker build -t sjtucaocao/javet-shell:latest --platform linux/arm64 -f docker/console.Dockerfile .
 
-FROM ubuntu:22.04 as build
+FROM gradle:8.2-jdk17-jammy as build
 
 RUN apt-get update -y
-RUN apt-get install -y openjdk-17-jdk
 RUN apt-get install -y unzip zip wget
-
-# Install Gradle
-WORKDIR /
-RUN wget https://services.gradle.org/distributions/gradle-8.2-bin.zip
-RUN mkdir /opt/gradle
-RUN unzip -d /opt/gradle gradle-8.2-bin.zip
-ENV GRADLE_HOME="/opt/gradle/gradle-8.2"
-ENV PATH=$GRADLE_HOME/bin:$PATH
 
 # Build JavetShell
 WORKDIR /
