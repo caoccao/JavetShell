@@ -38,7 +38,7 @@ Options:
 #### Docker
 
 - Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:latest`
-- Run `java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-0.1.0.jar`
+- Run `./javet-shell-node.sh` or `./javet-shell-v8.sh`
 
 Refer to this [page](console) for details.
 

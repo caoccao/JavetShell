@@ -4,7 +4,7 @@ Javet Shell Console is a console application that provides a Node.js flavored co
 
 ## Node.js Mode
 
-Run `java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-0.1.0.jar -r node` to activate the Node.js mode.
+Run `./javet-shell-node.sh` to activate the Node.js mode.
 
 ```js
 N > 1 + 1
@@ -27,7 +27,7 @@ N >
 
 ## V8 Mode
 
-Run `java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-0.1.0.jar -r v8` to activate the V8 mode.
+Run `./javet-shell-v8.sh` to activate the V8 mode.
 
 ```js
 V > 1 + 1
