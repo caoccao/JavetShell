@@ -14,8 +14,8 @@
 # limitations under the License.
 
 # Usage:
-#   docker build -t sjtucaocao/javet-shell:latest --platform linux/amd64 -f docker/console.Dockerfile .
-#   docker build -t sjtucaocao/javet-shell:latest --platform linux/arm64 -f docker/console.Dockerfile .
+#   docker build -t sjtucaocao/javet-shell:amd64-latest --platform linux/amd64 -f docker/console.Dockerfile .
+#   docker build -t sjtucaocao/javet-shell:arm64-latest --platform linux/arm64 -f docker/console.Dockerfile .
 
 FROM gradle:8.2-jdk17-jammy as build
 

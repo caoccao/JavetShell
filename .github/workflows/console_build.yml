@@ -99,5 +99,5 @@ jobs:
 
     - name: Docker Build and Push
       run: |
-        docker build -t ${{ env.DOCKERHUB_USERNAME }}/javet-shell:latest -f docker/console.Dockerfile .
-        docker push ${{ env.DOCKERHUB_USERNAME }}/javet-shell:latest
+        docker build -t ${{ env.DOCKERHUB_USERNAME }}/javet-shell:amd64-latest -f docker/console.Dockerfile .
+        docker push ${{ env.DOCKERHUB_USERNAME }}/javet-shell:amd64-latest
