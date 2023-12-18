@@ -58,3 +58,7 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN rm gradle-8.2-bin.zip
 RUN rm -rf /opt/gradle
 RUN rm -rf /console
+RUN rm -rf ~/.gradle
+RUN rm -rf /tmp/javet
+RUN rm -f /tmp/kotlin*
+RUN rm -rf /tmp/native*
