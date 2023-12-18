@@ -52,6 +52,6 @@ RUN echo "java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar j
 RUN chmod +x *.sh
 
 # Deploy
-FROM eclipse-temurin:17 as main
+FROM eclipse-temurin:17-jre-jammy as main
 COPY --from=build /javet* .
 COPY --from=build /libjavet* .
