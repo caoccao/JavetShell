@@ -17,7 +17,7 @@
 #   docker build -t sjtucaocao/javet-shell:latest --platform linux/amd64 -f docker/console.Dockerfile .
 #   docker build -t sjtucaocao/javet-shell:latest --platform linux/arm64 -f docker/console.Dockerfile .
 
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as build
 
 RUN apt-get update -y
 RUN apt-get install -y openjdk-17-jdk
@@ -51,14 +51,7 @@ RUN echo "java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar j
 RUN echo "java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-${VERSION}.jar -r v8" > javet-shell-v8.sh
 RUN chmod +x *.sh
 
-# Cleanup
-WORKDIR /
-RUN apt-get clean -y
-RUN rm -rf /var/lib/apt/lists/*
-RUN rm gradle-8.2-bin.zip
-RUN rm -rf /opt/gradle
-RUN rm -rf /console
-RUN rm -rf ~/.gradle
-RUN rm -rf /tmp/javet
-RUN rm -f /tmp/kotlin*
-RUN rm -rf /tmp/native*
+# Deploy
+FROM eclipse-temurin:17 as main
+COPY --from=build /javet* .
+COPY --from=build /libjavet* .
