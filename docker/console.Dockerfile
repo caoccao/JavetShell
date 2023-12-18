@@ -31,18 +31,18 @@ RUN gradle build
 
 # Build Cache
 ENV VERSION=0.1.0
-WORKDIR /
-RUN mv /console/build/libs/javet-shell-${VERSION}.jar ./
+WORKDIR /console/build/libs
 RUN unzip ./javet-shell-${VERSION}.jar '*.so'
 RUN zip -d ./javet-shell-${VERSION}.jar *.dll *.dylib *.so
 
 # Build Shell Scripts
-WORKDIR /
+WORKDIR /console/build/libs
 RUN echo "java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-${VERSION}.jar -r node" > javet-shell-node.sh
 RUN echo "java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar javet-shell-${VERSION}.jar -r v8" > javet-shell-v8.sh
 RUN chmod +x *.sh
 
 # Deploy
 FROM eclipse-temurin:17-jre-jammy as main
-COPY --from=build /javet* .
-COPY --from=build /libjavet* .
+WORKDIR /
+COPY --from=build /console/build/libs/javet* .
+COPY --from=build /console/build/libs/libjavet* .
