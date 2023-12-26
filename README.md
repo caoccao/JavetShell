@@ -37,7 +37,7 @@ Options:
 
 #### Docker
 
-- Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:latest`
+- Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:amd64-latest` or  `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:arm64-latest`
 - Run `./javet-shell-node.sh` or `./javet-shell-v8.sh`
 
 Please refer to this [page](console) for details.
