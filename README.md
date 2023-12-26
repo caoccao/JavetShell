@@ -32,7 +32,7 @@ Options:
 
 #### Manual
 
-- Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml) on Linux or Windows.
+- Download the jar file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/console_build.yml).
 - Run `java -jar javet-shell-0.1.0.jar`
 
 #### Docker
