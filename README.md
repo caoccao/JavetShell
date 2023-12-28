@@ -38,8 +38,23 @@ Options:
 
 #### Docker
 
-- Run `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:amd64-latest` or  `docker run --rm -it --entrypoint bash sjtucaocao/javet-shell:arm64-latest`
-- Run `./javet-shell-node.sh` or `./javet-shell-v8.sh`
+- Run the following command to run the Docker container.
+
+```sh
+# amd64
+docker run --rm -it -p 9229:9229 --entrypoint bash sjtucaocao/javet-shell:amd64-latest
+# arm64
+docker run --rm -it -p 9229:9229 --entrypoint bash sjtucaocao/javet-shell:arm64-latest
+```
+
+- Run the following command to start the JavetShell console.
+
+```sh
+# amd64
+./javet-shell-node.sh
+# arm64
+./javet-shell-v8.sh
+```
 
 Please refer to this [page](console) for details.
 
