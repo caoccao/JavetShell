@@ -18,22 +18,25 @@ package com.caoccao.javet.shell.inspector
 
 import com.caoccao.javet.interop.IV8InspectorListener
 import com.caoccao.javet.interop.V8Runtime
+import com.caoccao.javet.shell.constants.Constants
+import com.caoccao.javet.shell.entities.Options
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketAdapter
 
-class InspectorWebSocketAdapter(val v8Runtime: V8Runtime) : WebSocketAdapter(), IV8InspectorListener {
+class InspectorWebSocketAdapter(val v8Runtime: V8Runtime, val options: Options) : WebSocketAdapter(),
+    IV8InspectorListener {
     override fun flushProtocolNotifications() {
     }
 
     override fun onWebSocketClose(statusCode: Int, reason: String?) {
         v8Runtime.v8Inspector.removeListeners(this)
-        println("\nWebSocket server is closed at ${remote?.inetSocketAddress?.address}\n")
+        println("\nDebug server is closed.\n")
         super.onWebSocketClose(statusCode, reason)
     }
 
     override fun onWebSocketConnect(session: Session?) {
         super.onWebSocketConnect(session)
-        println("\nWebSocket server is opened at ${remote?.inetSocketAddress?.address}\n")
+        println("\nDebug server is open at ws://${Constants.Inspector.getWebSocketUrl(options.debugPort)}.\n")
         v8Runtime.v8Inspector.addListeners(this)
     }
 

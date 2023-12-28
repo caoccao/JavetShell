@@ -61,6 +61,10 @@ V > java['.getPackages']().map(p => p['.name']).sort().join(', ')
 java.io, java.lang, java.math, java.net, java.nio, java.security, java.text, java.time, java.util
 ```
 
+## Debug with Chrome DevTools
+
+JavetShell opens a debug port (default 9229) listening to the Chrome DevTools. Please visit this [page](https://www.caoccao.com/Javet/development/debug_with_chrome_developer_tools.html) for details.
+
 ## API
 
 - Node.js Mode

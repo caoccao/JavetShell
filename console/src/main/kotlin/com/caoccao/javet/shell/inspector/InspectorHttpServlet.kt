@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.shell.inspector
 
+import com.caoccao.javet.interop.loader.JavetLibLoader
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import javax.servlet.http.HttpServlet
@@ -24,39 +25,38 @@ import javax.servlet.http.HttpServletResponse
 
 class InspectorHttpServlet(val options: Options) : HttpServlet() {
     override fun doGet(request: HttpServletRequest, response: HttpServletResponse) {
-        val requestURI = request.requestURI;
-        response.contentType = Constants.Inspector.APPLICATION_JSON_CHARSET_UTF_8;
-        response.status = HttpServletResponse.SC_OK;
+        val requestURI = request.requestURI
+        response.contentType = Constants.Inspector.APPLICATION_JSON_CHARSET_UTF_8
+        response.status = HttpServletResponse.SC_OK
         when (requestURI) {
-            Constants.Inspector.PATH_JSON -> {
+            Constants.Inspector.PATH_JSON, Constants.Inspector.PATH_JSON_LIST -> {
                 val webSocketUrl = Constants.Inspector.getWebSocketUrl(options.debugPort)
                 response.writer.println(
                     """[ {
                        |  "description": "javet",
-                       |  "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&$webSocketUrl",
-                       |  "devtoolsFrontendUrlCompat": "devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&$webSocketUrl",
+                       |  "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=$webSocketUrl",
+                       |  "devtoolsFrontendUrlCompat": "devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=$webSocketUrl",
                        |  "id": "javet",
                        |  "title": "javet",
                        |  "type": "node",
                        |  "url": "file://",
-                       |  "webSocketDebuggerUrl": "$webSocketUrl"
+                       |  "webSocketDebuggerUrl": "ws://$webSocketUrl"
                        |} ]
                        |""".trimMargin("|")
-                );
+                )
             }
 
             Constants.Inspector.PATH_JSON_VERSION -> {
                 response.writer.println(
                     """{
-                      |  "Browser": "Javet",
+                      |  "Browser": "Javet/v${JavetLibLoader.LIB_VERSION}",
                       |  "Protocol-Version": "1.3"
-                      |}
-                      |""".trimMargin("|")
-                );
+                      |} """.trimMargin("|")
+                )
             }
 
             else -> {
-                response.writer.println("{}");
+                response.writer.println("{}")
             }
         }
     }

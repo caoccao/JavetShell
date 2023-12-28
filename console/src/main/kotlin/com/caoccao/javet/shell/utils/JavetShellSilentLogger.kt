@@ -18,25 +18,19 @@ package com.caoccao.javet.shell.utils
 
 import com.caoccao.javet.interfaces.IJavetLogger
 
-class JavetShellLogger : IJavetLogger {
+class JavetShellSilentLogger : IJavetLogger {
     override fun debug(message: String?) {
-        println(message)
     }
 
     override fun error(message: String?) {
-        println(message)
     }
 
     override fun error(message: String?, cause: Throwable?) {
-        println(message)
-        cause?.printStackTrace(System.out)
     }
 
     override fun info(message: String?) {
-        println(message)
     }
 
     override fun warn(message: String?) {
-        println(message)
     }
 }

@@ -26,7 +26,8 @@ import com.caoccao.javet.sanitizer.parsers.JavaScriptStatementListParser
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
-import com.caoccao.javet.shell.utils.JavetShellLogger
+import com.caoccao.javet.shell.utils.JavetShellDefaultLogger
+import com.caoccao.javet.shell.utils.JavetShellSilentLogger
 import com.caoccao.javet.values.V8Value
 import sun.misc.Signal
 import java.io.File
@@ -45,7 +46,8 @@ abstract class BaseJavetShell(
         println("Debug port is ${options.debugPort}")
         println()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
-            v8Runtime.logger = JavetShellLogger()
+            v8Runtime.logger = JavetShellDefaultLogger()
+            v8Runtime.v8Inspector.logger = JavetShellSilentLogger()
             v8Runtime.converter = Constants.Javet.JAVET_PROXY_CONVERTER
             createEventLoop(v8Runtime, options).use { eventLoop ->
                 Signal.handle(Signal("INT")) {

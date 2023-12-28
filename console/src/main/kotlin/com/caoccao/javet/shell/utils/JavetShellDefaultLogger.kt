@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.shell.inspector
+package com.caoccao.javet.shell.utils
 
-import com.caoccao.javet.interop.V8Runtime
-import com.caoccao.javet.shell.entities.Options
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator
+import com.caoccao.javet.interfaces.IJavetLogger
 
-class InspectorWebSocketCreator(val v8Runtime: V8Runtime, val options: Options) : WebSocketCreator {
-    override fun createWebSocket(
-        request: ServletUpgradeRequest,
-        response: ServletUpgradeResponse,
-    ) = InspectorWebSocketAdapter(v8Runtime, options)
+class JavetShellDefaultLogger : IJavetLogger {
+    override fun debug(message: String?) {
+        println(message)
+    }
+
+    override fun error(message: String?) {
+        println(message)
+    }
+
+    override fun error(message: String?, cause: Throwable?) {
+        println(message)
+        cause?.printStackTrace(System.out)
+    }
+
+    override fun info(message: String?) {
+        println(message)
+    }
+
+    override fun warn(message: String?) {
+        println(message)
+    }
 }

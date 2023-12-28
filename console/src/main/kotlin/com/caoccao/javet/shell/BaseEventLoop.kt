@@ -24,6 +24,7 @@ import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.inspector.InspectorHttpServlet
 import com.caoccao.javet.shell.inspector.InspectorWebSocketCreator
+import com.caoccao.javet.shell.utils.JavetShellSilentLogger
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
@@ -91,6 +92,7 @@ abstract class BaseEventLoop(
             inspectorServletContextHandler.contextPath = Constants.Inspector.PATH_ROOT
             inspectorServer!!.setHandler(inspectorServletContextHandler)
             val servletHolder = ServletHolder(InspectorHttpServlet(options))
+            inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_ROOT)
             inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_JSON)
             inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_JSON_VERSION)
             NativeWebSocketServletContainerInitializer.configure(inspectorServletContextHandler)
@@ -98,7 +100,7 @@ abstract class BaseEventLoop(
                 nativeWebSocketConfiguration.policy.maxTextMessageBufferSize = 0xFFFFFF
                 nativeWebSocketConfiguration.addMapping(
                     Constants.Inspector.PATH_JAVET,
-                    InspectorWebSocketCreator(v8Runtime),
+                    InspectorWebSocketCreator(v8Runtime, options),
                 )
             }
             WebSocketUpgradeFilter.configure(inspectorServletContextHandler)

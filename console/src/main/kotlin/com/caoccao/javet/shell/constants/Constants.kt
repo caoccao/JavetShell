@@ -44,10 +44,11 @@ object Constants {
         const val APPLICATION_JSON_CHARSET_UTF_8 = "application/json; charset=UTF-8"
         const val PATH_ROOT = "/"
         const val PATH_JSON = "/json"
+        const val PATH_JSON_LIST = "/json/list"
         const val PATH_JSON_VERSION = "/json/version"
         const val PATH_JAVET = "/javet"
 
-        fun getWebSocketUrl(port: UInt) = "ws://127.0.0.1:${port}${PATH_JAVET}"
+        fun getWebSocketUrl(port: UInt) = "localhost:${port}${PATH_JAVET}"
     }
 
     object Javet {
