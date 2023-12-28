@@ -48,7 +48,11 @@ open class BaseTestSuite {
             v8Runtime.converter = Constants.Javet.JAVET_PROXY_CONVERTER
         }
         eventLoops = v8Runtimes.map { v8Runtime ->
-            val option = Options(v8Runtime.jsRuntimeType, Constants.Options.SCRIPT_NAME_DEFAULT_VALUE)
+            val option = Options(
+                Constants.Options.DEBUG_PORT_DEFAULT_VALUE,
+                v8Runtime.jsRuntimeType,
+                Constants.Options.SCRIPT_NAME_DEFAULT_VALUE,
+            )
             if (v8Runtime.jsRuntimeType.isNode) {
                 EventLoopNode(v8Runtime, option)
             } else {

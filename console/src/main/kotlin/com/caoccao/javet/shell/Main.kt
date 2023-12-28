@@ -29,6 +29,11 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     val argParser = ArgParser(Constants.Application.NAME)
+    val debugPort by argParser.option(
+        ArgType.Int,
+        shortName = Constants.Options.DEBUG_PORT_SHORT_NAME,
+        description = Constants.Options.DEBUG_PORT_DESCRIPTION,
+    ).default(Constants.Options.DEBUG_PORT_DEFAULT_VALUE.toInt())
     val runtimeType by argParser.option(
         ArgType.Choice<RuntimeType>(),
         shortName = Constants.Options.JS_RUNTIME_TYPE_SHORT_NAME,
@@ -41,6 +46,7 @@ fun main(args: Array<String>) {
     ).default(Constants.Options.SCRIPT_NAME_DEFAULT_VALUE)
     argParser.parse(args)
     val options = Options(
+        debugPort.toUInt(),
         runtimeType.value,
         scriptName,
     )

@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package com.caoccao.javet.shell.entities
+package com.caoccao.javet.shell.inspector
 
-import com.caoccao.javet.enums.JSRuntimeType
+import com.caoccao.javet.interop.V8Runtime
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator
 
-data class Options(
-    val debugPort: UInt,
-    val jsRuntimeType: JSRuntimeType,
-    val scriptName: String,
-)
+class InspectorWebSocketCreator(val v8Runtime: V8Runtime) : WebSocketCreator {
+    override fun createWebSocket(
+        request: ServletUpgradeRequest,
+        response: ServletUpgradeResponse,
+    ) = InspectorWebSocketAdapter(v8Runtime)
+}

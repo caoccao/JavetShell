@@ -22,13 +22,23 @@ import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
+import com.caoccao.javet.shell.inspector.InspectorHttpServlet
+import com.caoccao.javet.shell.inspector.InspectorWebSocketCreator
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.servlet.ServletHolder
+import org.eclipse.jetty.websocket.server.NativeWebSocketConfiguration
+import org.eclipse.jetty.websocket.server.NativeWebSocketServletContainerInitializer
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter
 import java.util.concurrent.TimeUnit
+import javax.servlet.ServletContext
 
 abstract class BaseEventLoop(
     protected val v8Runtime: V8Runtime,
     protected val options: Options,
 ) : IJavetClosable, Runnable {
     private var daemonThread: Thread? = null
+    private var inspectorServer: Server? = null
     protected var jnEventLoop: JNEventLoop? = null
 
     @Volatile
@@ -73,13 +83,44 @@ abstract class BaseEventLoop(
         gcScheduled = false
         daemonThread = Thread(this)
         daemonThread?.start()
+        try {
+            inspectorServer = Server(options.debugPort.toInt())
+            val inspectorServletContextHandler = ServletContextHandler(
+                ServletContextHandler.SESSIONS or ServletContextHandler.NO_SECURITY
+            )
+            inspectorServletContextHandler.contextPath = Constants.Inspector.PATH_ROOT
+            inspectorServer!!.setHandler(inspectorServletContextHandler)
+            val servletHolder = ServletHolder(InspectorHttpServlet(options))
+            inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_JSON)
+            inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_JSON_VERSION)
+            NativeWebSocketServletContainerInitializer.configure(inspectorServletContextHandler)
+            { _: ServletContext, nativeWebSocketConfiguration: NativeWebSocketConfiguration ->
+                nativeWebSocketConfiguration.policy.maxTextMessageBufferSize = 0xFFFFFF
+                nativeWebSocketConfiguration.addMapping(
+                    Constants.Inspector.PATH_JAVET,
+                    InspectorWebSocketCreator(v8Runtime),
+                )
+            }
+            WebSocketUpgradeFilter.configure(inspectorServletContextHandler)
+            inspectorServer!!.start()
+        } catch (t: Throwable) {
+            println("\nError: ${t.message}\n")
+        }
     }
 
     protected open fun stop() {
         running = false
         gcScheduled = false
+        if (inspectorServer != null && (inspectorServer!!.isStarted || inspectorServer!!.isStarting)) {
+            try {
+                inspectorServer!!.stop()
+            } catch (t: Throwable) {
+                println("\nError: ${t.message}\n")
+            }
+        }
         daemonThread?.join()
         daemonThread = null
+        inspectorServer = null
         jnEventLoop = null
     }
 }

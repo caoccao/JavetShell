@@ -35,6 +35,13 @@ object Config {
         const val JAVET_MACOS = "com.caoccao.javet:javet-macos:${Versions.JAVET}"
         const val JAVET_SANITIZER = "com.caoccao.javet.sanitizer:javet-sanitizer:${Versions.JAVET_SANITIZER}"
 
+        // https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/javax-websocket-server-impl
+        const val JETTY_JAVAX_WEBSOCKET_SERVER_IMPL =
+            "org.eclipse.jetty.websocket:javax-websocket-server-impl:${Versions.JETTY_WEBSOCKET}"
+
+        // https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/websocket-server
+        const val JETTY_WEBSOCKET_SERVER = "org.eclipse.jetty.websocket:websocket-server:${Versions.JETTY_WEBSOCKET}"
+
         // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
         const val JUNIT_JUPITER_API = "org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}"
 
@@ -59,6 +66,7 @@ object Config {
         const val JAVET = "3.0.2"
         const val JAVET_SANITIZER = "0.2.0-antlr-4.13.1"
         const val JAVET_SHELL = "0.1.0"
+        const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
         const val KOTLIN_STDLIB_JDK8 = "1.9.21"
         const val KOTLINX_CLI = "0.3.6"
@@ -92,6 +100,8 @@ dependencies {
         implementation(Config.Projects.JAVET)
     }
     implementation(Config.Projects.JAVET_SANITIZER)
+    implementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
+    implementation(Config.Projects.JETTY_WEBSOCKET_SERVER)
     implementation(Config.Projects.KOTLIN_STDLIB_JDK8)
     implementation(Config.Projects.KOTLINX_CLI)
     implementation(Config.Projects.VERTX)

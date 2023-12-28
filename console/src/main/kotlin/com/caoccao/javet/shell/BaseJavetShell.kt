@@ -35,17 +35,14 @@ import java.util.*
 abstract class BaseJavetShell(
     protected val options: Options,
 ) {
-    companion object {
-        const val PROMPT_STRING = "Please input the script or press Ctrl+C to exit."
-    }
-
     protected abstract val prompt: String
 
     protected abstract fun createEventLoop(v8Runtime: V8Runtime, options: Options): BaseEventLoop
 
     fun execute(): ExitCode {
         println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
-        println(PROMPT_STRING)
+        println(Constants.Application.PROMPT_STRING)
+        println("Debug port is ${options.debugPort}")
         println()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
             v8Runtime.logger = JavetShellLogger()

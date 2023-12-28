@@ -203,9 +203,8 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
                 } else if (v8ValueObject.has(methodName)) {
                     // Function or Property
                     try (V8Value v8ValueProperty = v8ValueObject.get(methodName)) {
-                        if (v8ValueProperty instanceof V8ValueFunction) {
+                        if (v8ValueProperty instanceof V8ValueFunction v8ValueFunction) {
                             // Function
-                            V8ValueFunction v8ValueFunction = (V8ValueFunction) v8ValueProperty;
                             return v8ValueFunction.callObject(null, arguments);
                         } else if (argumentLength == 0) {
                             // Property
@@ -220,7 +219,7 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
                     } else if (methodName.startsWith(V8ValueObject.METHOD_PREFIX_GET)) {
                         propertyName = methodName.substring(V8ValueObject.METHOD_PREFIX_GET.length());
                     }
-                    if (propertyName != null && propertyName.length() > 0) {
+                    if (propertyName != null && !propertyName.isEmpty()) {
                         propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT)
                                 + propertyName.substring(1);
                         if (v8ValueObject.has(propertyName)) {
@@ -233,7 +232,7 @@ public final class JavetReflectionObjectFactory implements IJavetReflectionObjec
                     if (methodName.startsWith(V8ValueObject.METHOD_PREFIX_SET)) {
                         propertyName = methodName.substring(V8ValueObject.METHOD_PREFIX_SET.length());
                     }
-                    if (propertyName != null && propertyName.length() > 0) {
+                    if (propertyName != null && !propertyName.isEmpty()) {
                         propertyName = propertyName.substring(0, 1).toLowerCase(Locale.ROOT)
                                 + propertyName.substring(1);
                         if (v8ValueObject.has(propertyName)) {
