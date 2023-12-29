@@ -28,6 +28,7 @@ Options:
     --debugPort, -p [9229] -> Debug port { Int }
     --runtimeType, -r [V8] -> JS runtime type { Value should be one of [node, v8] }
     --scriptName, -s [main.js] -> Script name { String }
+    --verbose, -v [false] -> Verbose
     --help, -h -> Usage info
 ```
 

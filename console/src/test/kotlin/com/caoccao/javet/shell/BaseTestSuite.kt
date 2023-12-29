@@ -20,6 +20,7 @@ import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
+import com.caoccao.javet.shell.utils.JavetShellDefaultLogger
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 
@@ -52,11 +53,13 @@ open class BaseTestSuite {
                 Constants.Options.DEBUG_PORT_DEFAULT_VALUE,
                 v8Runtime.jsRuntimeType,
                 Constants.Options.SCRIPT_NAME_DEFAULT_VALUE,
+                false,
             )
+            val logger = JavetShellDefaultLogger()
             if (v8Runtime.jsRuntimeType.isNode) {
-                EventLoopNode(v8Runtime, option)
+                EventLoopNode(logger, v8Runtime, option)
             } else {
-                EventLoopV8(v8Runtime, option)
+                EventLoopV8(logger, v8Runtime, option)
             }
         }.toTypedArray()
     }

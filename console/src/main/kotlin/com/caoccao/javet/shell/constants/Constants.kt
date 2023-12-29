@@ -38,6 +38,9 @@ object Constants {
         const val SCRIPT_NAME_DEFAULT_VALUE = "main.js"
         const val SCRIPT_NAME_DESCRIPTION = "Script name"
         const val SCRIPT_NAME_SHORT_NAME = "s"
+        const val VERBOSE_DEFAULT_VALUE = false
+        const val VERBOSE_DESCRIPTION = "Verbose"
+        const val VERBOSE_SHORT_NAME = "v"
     }
 
     object Inspector {

@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.shell.inspector
 
+import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.IV8InspectorListener
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.constants.Constants
@@ -23,26 +24,30 @@ import com.caoccao.javet.shell.entities.Options
 import org.eclipse.jetty.websocket.api.Session
 import org.eclipse.jetty.websocket.api.WebSocketAdapter
 
-class InspectorWebSocketAdapter(val v8Runtime: V8Runtime, val options: Options) : WebSocketAdapter(),
+class InspectorWebSocketAdapter(
+    val logger: IJavetLogger,
+    val v8Runtime: V8Runtime,
+    val options: Options,
+) : WebSocketAdapter(),
     IV8InspectorListener {
     override fun flushProtocolNotifications() {
     }
 
     override fun onWebSocketClose(statusCode: Int, reason: String?) {
         v8Runtime.v8Inspector.removeListeners(this)
-        println("\nDebug server is closed.\n")
+        logger.debug("\nDebug server is closed.\n")
         super.onWebSocketClose(statusCode, reason)
     }
 
     override fun onWebSocketConnect(session: Session?) {
         super.onWebSocketConnect(session)
-        println("\nDebug server is open at ws://${Constants.Inspector.getWebSocketUrl(options.debugPort)}.\n")
+        logger.debug("\nDebug server is open at ws://${Constants.Inspector.getWebSocketUrl(options.debugPort)}.\n")
         v8Runtime.v8Inspector.addListeners(this)
     }
 
     override fun onWebSocketError(cause: Throwable?) {
         cause?.let { t ->
-            println("\nError: ${t.message}\n")
+            logger.error("\nError: ${t.message}\n")
         }
     }
 
@@ -51,7 +56,7 @@ class InspectorWebSocketAdapter(val v8Runtime: V8Runtime, val options: Options) 
             try {
                 v8Runtime.v8Inspector.sendRequest(message);
             } catch (t: Throwable) {
-                println("\nError: ${t.message}\n")
+                logger.error("\nError: ${t.message}\n")
             }
         }
     }
@@ -61,7 +66,7 @@ class InspectorWebSocketAdapter(val v8Runtime: V8Runtime, val options: Options) 
             try {
                 remote.sendString(message);
             } catch (t: Throwable) {
-                println("\nError: ${t.message}\n")
+                logger.error("\nError: ${t.message}\n")
             }
         }
     }
@@ -71,7 +76,7 @@ class InspectorWebSocketAdapter(val v8Runtime: V8Runtime, val options: Options) 
             try {
                 remote.sendString(message);
             } catch (t: Throwable) {
-                println("\nError: ${t.message}\n")
+                logger.error("\nError: ${t.message}\n")
             }
         }
     }
@@ -80,7 +85,7 @@ class InspectorWebSocketAdapter(val v8Runtime: V8Runtime, val options: Options) 
         try {
             v8Runtime.getExecutor("console.log('Welcome to Javet Debugging Environment!');").executeVoid();
         } catch (t: Throwable) {
-            println("\nError: ${t.message}\n")
+            logger.error("\nError: ${t.message}\n")
         }
     }
 

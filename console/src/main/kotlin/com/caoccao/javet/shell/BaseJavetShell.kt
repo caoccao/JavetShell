@@ -18,11 +18,13 @@ package com.caoccao.javet.shell
 
 import com.caoccao.javet.exceptions.JavetCompilationException
 import com.caoccao.javet.exceptions.JavetExecutionException
+import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.sanitizer.antlr.JavaScriptParser
 import com.caoccao.javet.sanitizer.exceptions.JavetSanitizerException
 import com.caoccao.javet.sanitizer.parsers.JavaScriptStatementListParser
+import com.caoccao.javet.sanitizer.utils.StringUtils
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
@@ -33,23 +35,27 @@ import sun.misc.Signal
 import java.io.File
 import java.util.*
 
-abstract class BaseJavetShell(
-    protected val options: Options,
-) {
+abstract class BaseJavetShell(protected val options: Options) {
+    protected val logger = JavetShellDefaultLogger()
     protected abstract val prompt: String
 
-    protected abstract fun createEventLoop(v8Runtime: V8Runtime, options: Options): BaseEventLoop
+    protected abstract fun createEventLoop(
+        logger: IJavetLogger,
+        v8Runtime: V8Runtime,
+        options: Options,
+    ): BaseEventLoop
 
     fun execute(): ExitCode {
-        println("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
-        println(Constants.Application.PROMPT_STRING)
-        println("Debug port is ${options.debugPort}")
-        println()
+        logger.info("${Constants.Application.NAME} v${Constants.Application.VERSION} (${options.jsRuntimeType.name} ${options.jsRuntimeType.version})")
+        logger.info(Constants.Application.PROMPT_STRING)
+        logger.info("Debug port is ${options.debugPort}")
+        logger.info(StringUtils.EMPTY)
+        val customLogger = if (options.verbose) logger else JavetShellSilentLogger()
         V8Host.getInstance(options.jsRuntimeType).createV8Runtime<V8Runtime>().use { v8Runtime ->
-            v8Runtime.logger = JavetShellDefaultLogger()
-            v8Runtime.v8Inspector.logger = JavetShellSilentLogger()
+            v8Runtime.logger = customLogger
+            v8Runtime.v8Inspector.logger = customLogger
             v8Runtime.converter = Constants.Javet.JAVET_PROXY_CONVERTER
-            createEventLoop(v8Runtime, options).use { eventLoop ->
+            createEventLoop(customLogger, v8Runtime, options).use { eventLoop ->
                 Signal.handle(Signal("INT")) {
                     // Stop the event loop after Ctrl+C is pressed.
                     eventLoop.running = false
@@ -66,7 +72,7 @@ abstract class BaseJavetShell(
                         try {
                             val line = scanner.nextLine()
                             if (line == null) {
-                                println()
+                                logger.info(StringUtils.EMPTY)
                                 eventLoop.running = false
                                 break
                             } else if (line.isBlank()) {
@@ -99,42 +105,34 @@ abstract class BaseJavetShell(
                                         .setModule(isESM && isBlockCompleted)
                                         .execute<V8Value>()
                                         .use { v8Value ->
-                                            println(v8Value.toString())
+                                            logger.info(v8Value.toString())
                                         }
                                 }
                                 isMultiline = false
                             } else {
-                                println()
+                                logger.info(StringUtils.EMPTY)
                                 break
                             }
                         } catch (e: JavetSanitizerException) {
                             if (isBlockCompleted) {
-                                println()
-                                println(e.message)
-                                println()
+                                logger.error("\n${e.message}\n")
                             }
                             isMultiline = !isBlockCompleted
                         } catch (e: JavetCompilationException) {
                             if (isBlockCompleted) {
-                                println()
-                                println(e.scriptingError.toString())
-                                println()
+                                logger.error("\n${e.scriptingError}\n")
                             }
                             isMultiline = !isBlockCompleted
                         } catch (e: JavetExecutionException) {
                             isMultiline = false
-                            println()
-                            println(e.scriptingError.toString())
-                            println()
+                            logger.error("\n${e.scriptingError}\n")
                         } catch (e: NoSuchElementException) {
-                            println()
+                            logger.info(StringUtils.EMPTY)
                             eventLoop.running = false
                             break
                         } catch (t: Throwable) {
                             isMultiline = false
-                            println()
-                            println(t.message)
-                            println()
+                            logger.error("\n${t.message}\n")
                         } finally {
                             if (!isMultiline) {
                                 sb.clear()

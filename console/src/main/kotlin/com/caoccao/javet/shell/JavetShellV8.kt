@@ -16,6 +16,7 @@
 
 package com.caoccao.javet.shell
 
+import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.entities.Options
 
@@ -29,15 +30,17 @@ class JavetShellV8(
     override val prompt: String
         get() = "V > "
 
-    override fun createEventLoop(v8Runtime: V8Runtime, options: Options): BaseEventLoop {
-        return EventLoopV8(v8Runtime, options)
+    override fun createEventLoop(
+        logger: IJavetLogger,
+        v8Runtime: V8Runtime,
+        options: Options,
+    ): BaseEventLoop {
+        return EventLoopV8(logger, v8Runtime, options)
     }
 
     override fun registerPromiseRejectCallback(v8Runtime: V8Runtime) {
         v8Runtime.setPromiseRejectCallback { _, _, value ->
-            println()
-            println(value.toString())
-            println()
+            logger.warn("\n${value}\n")
         }
     }
 }

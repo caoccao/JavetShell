@@ -44,11 +44,17 @@ fun main(args: Array<String>) {
         shortName = Constants.Options.SCRIPT_NAME_SHORT_NAME,
         description = Constants.Options.SCRIPT_NAME_DESCRIPTION,
     ).default(Constants.Options.SCRIPT_NAME_DEFAULT_VALUE)
+    val verbose by argParser.option(
+        ArgType.Boolean,
+        shortName = Constants.Options.VERBOSE_SHORT_NAME,
+        description = Constants.Options.VERBOSE_DESCRIPTION,
+    ).default(Constants.Options.VERBOSE_DEFAULT_VALUE)
     argParser.parse(args)
     val options = Options(
         debugPort.toUInt(),
         runtimeType.value,
         scriptName,
+        verbose,
     )
     ByteArrayOutputStream().use { byteArrayOutputStream ->
         PrintStream(byteArrayOutputStream).use { printStream ->

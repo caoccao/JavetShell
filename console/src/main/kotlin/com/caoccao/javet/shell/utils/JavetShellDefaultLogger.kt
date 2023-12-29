@@ -19,24 +19,45 @@ package com.caoccao.javet.shell.utils
 import com.caoccao.javet.interfaces.IJavetLogger
 
 class JavetShellDefaultLogger : IJavetLogger {
-    override fun debug(message: String?) {
+    companion object {
+        const val BLACK = "\u001b[30m"
+        const val BLUE = "\u001b[34m"
+        const val CYAN = "\u001b[36m"
+        const val GREEN = "\u001b[32m"
+        const val MAGENTA = "\u001b[35m"
+        const val RED = "\u001b[31m"
+        const val WHITE = "\u001b[37m"
+        const val YELLOW = "\u001b[33m"
+
+        const val BRIGHT_BLACK = "\u001b[30;1m"
+        const val BRIGHT_BLUE = "\u001b[34;1m"
+        const val BRIGHT_CYAN = "\u001b[36;1m"
+        const val BRIGHT_GREEN = "\u001b[32;1m"
+        const val BRIGHT_MAGENTA = "\u001b[35;1m"
+        const val BRIGHT_RED = "\u001b[31;1m"
+        const val BRIGHT_WHITE = "\u001b[37;1m"
+        const val BRIGHT_YELLOW = "\u001b[33;1m"
+
+        const val RESET = "\u001b[0m"
+    }
+
+    override fun debug(message: String) {
+        println("$BRIGHT_YELLOW$message$RESET")
+    }
+
+    override fun error(message: String) {
+        println("$BRIGHT_RED$message$RESET")
+    }
+
+    override fun error(message: String, cause: Throwable) {
+        println("$BRIGHT_RED$message$RESET")
+    }
+
+    override fun info(message: String) {
         println(message)
     }
 
-    override fun error(message: String?) {
-        println(message)
-    }
-
-    override fun error(message: String?, cause: Throwable?) {
-        println(message)
-        cause?.printStackTrace(System.out)
-    }
-
-    override fun info(message: String?) {
-        println(message)
-    }
-
-    override fun warn(message: String?) {
-        println(message)
+    override fun warn(message: String) {
+        println("$BRIGHT_CYAN$message$RESET")
     }
 }

@@ -16,15 +16,20 @@
 
 package com.caoccao.javet.shell.inspector
 
+import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.entities.Options
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator
 
-class InspectorWebSocketCreator(val v8Runtime: V8Runtime, val options: Options) : WebSocketCreator {
+class InspectorWebSocketCreator(
+    val logger: IJavetLogger,
+    val v8Runtime: V8Runtime,
+    val options: Options,
+) : WebSocketCreator {
     override fun createWebSocket(
         request: ServletUpgradeRequest,
         response: ServletUpgradeResponse,
-    ) = InspectorWebSocketAdapter(v8Runtime, options)
+    ) = InspectorWebSocketAdapter(logger, v8Runtime, options)
 }

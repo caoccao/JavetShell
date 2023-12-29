@@ -18,6 +18,7 @@ package com.caoccao.javet.shell
 
 import com.caoccao.javet.enums.V8AwaitMode
 import com.caoccao.javet.interfaces.IJavetClosable
+import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.shell.constants.Constants
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit
 import javax.servlet.ServletContext
 
 abstract class BaseEventLoop(
+    protected val logger: IJavetLogger,
     protected val v8Runtime: V8Runtime,
     protected val options: Options,
 ) : IJavetClosable, Runnable {
@@ -93,20 +95,18 @@ abstract class BaseEventLoop(
             inspectorServer!!.setHandler(inspectorServletContextHandler)
             val servletHolder = ServletHolder(InspectorHttpServlet(options))
             inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_ROOT)
-            inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_JSON)
-            inspectorServletContextHandler.addServlet(servletHolder, Constants.Inspector.PATH_JSON_VERSION)
             NativeWebSocketServletContainerInitializer.configure(inspectorServletContextHandler)
             { _: ServletContext, nativeWebSocketConfiguration: NativeWebSocketConfiguration ->
                 nativeWebSocketConfiguration.policy.maxTextMessageBufferSize = 0xFFFFFF
                 nativeWebSocketConfiguration.addMapping(
                     Constants.Inspector.PATH_JAVET,
-                    InspectorWebSocketCreator(v8Runtime, options),
+                    InspectorWebSocketCreator(logger, v8Runtime, options),
                 )
             }
             WebSocketUpgradeFilter.configure(inspectorServletContextHandler)
             inspectorServer!!.start()
         } catch (t: Throwable) {
-            println("\nError: ${t.message}\n")
+            logger.error("\nError: ${t.message}\n")
         }
     }
 
@@ -117,7 +117,7 @@ abstract class BaseEventLoop(
             try {
                 inspectorServer!!.stop()
             } catch (t: Throwable) {
-                println("\nError: ${t.message}\n")
+                logger.error("\nError: ${t.message}\n")
             }
         }
         daemonThread?.join()

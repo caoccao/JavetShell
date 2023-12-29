@@ -16,14 +16,16 @@
 
 package com.caoccao.javet.shell
 
+import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.JavetShellModuleType
 
 class EventLoopNode(
+    logger: IJavetLogger,
     v8Runtime: V8Runtime,
     options: Options,
-) : BaseEventLoop(v8Runtime, options) {
+) : BaseEventLoop(logger, v8Runtime, options) {
     override fun start() {
         super.start()
         jnEventLoop?.loadStaticModules(

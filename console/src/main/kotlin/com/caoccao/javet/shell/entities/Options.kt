@@ -22,4 +22,5 @@ data class Options(
     val debugPort: UInt,
     val jsRuntimeType: JSRuntimeType,
     val scriptName: String,
+    val verbose: Boolean,
 )
