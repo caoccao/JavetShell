@@ -6,8 +6,8 @@ Javet Shell is a console or Android application that provides Node.js flavored c
 
 ## Features
 
-- [Android](android) (Implementing)
-- [Linux + MacOS + Windows](console) (Implementing)
+- [Android](android) (Under construction)
+- [Linux + MacOS + Windows](console)
 - Complete access to JVM
 - Debug with Chrome Dev Tools
 
