@@ -47,6 +47,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.caoccao.javet.interop.V8Host
@@ -57,12 +59,12 @@ import com.caoccao.javet.utils.JavetOSUtils
 import com.caoccao.javet.values.V8Value
 
 class MainActivity : ComponentActivity() {
-    private lateinit var v8Runtime: V8Runtime
+    private var v8Runtime: V8Runtime? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         v8Runtime = V8Host.getV8Instance().createV8Runtime()
-        val now = v8Runtime.getExecutor("new Date()").executeZonedDateTime()
+        val now = v8Runtime?.getExecutor("new Date()")?.executeZonedDateTime()
         val stringBuilder = StringBuilder().append(
             """Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
                             | 
@@ -70,7 +72,7 @@ class MainActivity : ComponentActivity() {
                             | 
                             | OS Name = ${JavetOSUtils.OS_NAME}
                             | OS Arch = ${JavetOSUtils.OS_ARCH}
-                            | V8 = ${v8Runtime.version}
+                            | V8 = ${v8Runtime?.version}
                             | Now = $now
                             | 
                         """.trimMargin("| ")
@@ -82,23 +84,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen(v8Runtime, stringBuilder)
+                    HomeScreen(v8Runtime = v8Runtime, stringBuilder = stringBuilder)
                 }
             }
         }
     }
 
     override fun onDestroy() {
-        v8Runtime.close()
+        v8Runtime?.close()
+        v8Runtime = null
         super.onDestroy()
     }
 }
 
 @Composable
 fun HomeScreen(
-    v8Runtime: V8Runtime,
-    stringBuilder: java.lang.StringBuilder,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    v8Runtime: V8Runtime? = null,
+    stringBuilder: StringBuilder = StringBuilder()
 ) {
     Scaffold(
         topBar = {
@@ -108,7 +111,7 @@ fun HomeScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Javet Shell")
+                    Text(text = stringResource(id = R.string.app_name))
                 }
             )
         },
@@ -117,6 +120,24 @@ fun HomeScreen(
         val scrollState = rememberScrollState(0)
         var resultString by remember { mutableStateOf(stringBuilder.toString()) }
         var codeString by remember { mutableStateOf("") }
+        val executeFunction = {
+            val trimmedCodeString = codeString.trim()
+            if (!trimmedCodeString.isNullOrBlank()) {
+                try {
+                    v8Runtime!!
+                        .getExecutor(codeString)
+                        .execute<V8Value>()
+                        .use { v8Value ->
+                            stringBuilder.append("\n> $trimmedCodeString\n$v8Value")
+                        }
+                    codeString = ""
+                } catch (t: Throwable) {
+                    stringBuilder.append("\n> $trimmedCodeString\n${t.message}")
+                } finally {
+                    resultString = stringBuilder.toString()
+                }
+            }
+        }
         LaunchedEffect(resultString) {
             scrollState.scrollTo(scrollState.maxValue)
         }
@@ -136,6 +157,7 @@ fun HomeScreen(
                         .verticalScroll(scrollState)
                         .padding(padding)
                         .fillMaxSize()
+                        .testTag("textResult")
                 )
             }
             Column(
@@ -144,27 +166,14 @@ fun HomeScreen(
                     .weight(0.3F)
             ) {
                 ElevatedButton(
-                    onClick = {
-                        try {
-                            v8Runtime
-                                .getExecutor(codeString)
-                                .execute<V8Value>()
-                                .use { v8Value ->
-                                    stringBuilder.append("\n> $codeString\n$v8Value")
-                                }
-                            codeString = ""
-                        } catch (t: Throwable) {
-                            stringBuilder.append("\n> $codeString\n${t.message}")
-                        } finally {
-                            resultString = stringBuilder.toString()
-                        }
-                    },
+                    onClick = executeFunction,
                     shape = RoundedCornerShape(10),
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(start = padding, end = padding)
+                        .testTag("elevatedButtonExecute")
                 ) {
-                    Text(text = "Execute")
+                    Text(text = stringResource(id = R.string.button_execute))
                 }
                 BasicTextField(
                     value = codeString,
@@ -173,6 +182,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .padding(padding)
                         .background(color = Color.LightGray)
+                        .testTag("basicTextFieldCodeString")
                 )
             }
         }
@@ -183,8 +193,6 @@ fun HomeScreen(
 @Composable
 fun JavetShellPreview() {
     JavetShellTheme {
-        V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
-            HomeScreen(v8Runtime, StringBuilder())
-        }
+        HomeScreen()
     }
 }
