@@ -120,9 +120,9 @@ fun HomeScreen(
         val scrollState = rememberScrollState(0)
         var resultString by remember { mutableStateOf(stringBuilder.toString()) }
         var codeString by remember { mutableStateOf("") }
-        val executeFunction = {
+        val executeCode = {
             val trimmedCodeString = codeString.trim()
-            if (!trimmedCodeString.isNullOrBlank()) {
+            if (trimmedCodeString.isNotBlank()) {
                 try {
                     v8Runtime!!
                         .getExecutor(codeString)
@@ -166,7 +166,7 @@ fun HomeScreen(
                     .weight(0.3F)
             ) {
                 ElevatedButton(
-                    onClick = executeFunction,
+                    onClick = executeCode,
                     shape = RoundedCornerShape(10),
                     modifier = modifier
                         .fillMaxWidth()
@@ -177,7 +177,15 @@ fun HomeScreen(
                 }
                 BasicTextField(
                     value = codeString,
-                    onValueChange = { codeString = it },
+                    onValueChange = { newCodeString ->
+                        val executionRequired = codeString.isNotEmpty()
+                                && newCodeString.startsWith(codeString)
+                                && newCodeString.substring(codeString.length - 1) == "\n\n"
+                        codeString = newCodeString
+                        if (executionRequired) {
+                            executeCode()
+                        }
+                    },
                     modifier = modifier
                         .fillMaxSize()
                         .padding(padding)

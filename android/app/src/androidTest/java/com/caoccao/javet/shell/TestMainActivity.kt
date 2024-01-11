@@ -17,10 +17,8 @@
 package com.caoccao.javet.shell
 
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.assertValueEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -44,7 +42,7 @@ class TestMainActivity {
     val composeRule = createComposeRule()
 
     @Test
-    fun testExecute() {
+    fun testButtonExecute() {
         V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
             composeRule.setContent {
                 JavetShellTheme {
@@ -53,6 +51,21 @@ class TestMainActivity {
             }
             composeRule.onNodeWithTag("basicTextFieldCodeString").performTextInput("1 + 1")
             composeRule.onNodeWithTag("elevatedButtonExecute").performClick()
+            composeRule.onNodeWithTag("textResult").assertTextEquals("\n> 1 + 1\n2")
+        }
+    }
+
+    @Test
+    fun testBasicTextFieldExecute() {
+        V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
+            composeRule.setContent {
+                JavetShellTheme {
+                    HomeScreen(v8Runtime = v8Runtime, stringBuilder = StringBuilder())
+                }
+            }
+            val nodeBasicTextField = composeRule.onNodeWithTag("basicTextFieldCodeString")
+            nodeBasicTextField.performTextInput("1 + 1\n")
+            nodeBasicTextField.performTextInput("\n")
             composeRule.onNodeWithTag("textResult").assertTextEquals("\n> 1 + 1\n2")
         }
     }
