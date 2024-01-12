@@ -31,8 +31,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -103,6 +107,8 @@ fun HomeScreen(
     v8Runtime: V8Runtime? = null,
     stringBuilder: StringBuilder = StringBuilder()
 ) {
+    var resultString by remember { mutableStateOf(stringBuilder.toString()) }
+    var codeString by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -112,14 +118,28 @@ fun HomeScreen(
                 ),
                 title = {
                     Text(text = stringResource(id = R.string.app_name))
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            v8Runtime?.resetContext()
+                            stringBuilder.clear().append("V8 context is refreshed.")
+                            codeString = ""
+                            resultString = ""
+                        },
+                        modifier = modifier.testTag("iconButtonRefresh")
+                    ) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = stringResource(id = R.string.icon_refresh)
+                        )
+                    }
                 }
             )
         },
     ) { paddingValues ->
         val padding = 5.dp
         val scrollState = rememberScrollState(0)
-        var resultString by remember { mutableStateOf(stringBuilder.toString()) }
-        var codeString by remember { mutableStateOf("") }
         val executeCode = {
             val trimmedCodeString = codeString.trim()
             if (trimmedCodeString.isNotBlank()) {

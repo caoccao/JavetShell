@@ -42,6 +42,13 @@ class TestMainActivity {
     val composeRule = createComposeRule()
 
     @Test
+    fun testAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals("com.caoccao.javet.shell", appContext.packageName)
+    }
+
+    @Test
     fun testButtonExecute() {
         V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
             composeRule.setContent {
@@ -49,9 +56,12 @@ class TestMainActivity {
                     HomeScreen(v8Runtime = v8Runtime, stringBuilder = StringBuilder())
                 }
             }
-            composeRule.onNodeWithTag("basicTextFieldCodeString").performTextInput("1 + 1")
-            composeRule.onNodeWithTag("elevatedButtonExecute").performClick()
-            composeRule.onNodeWithTag("textResult").assertTextEquals("\n> 1 + 1\n2")
+            val nodeBasicTextField = composeRule.onNodeWithTag("basicTextFieldCodeString")
+            val nodeElevatedButtonExecute = composeRule.onNodeWithTag("elevatedButtonExecute")
+            val nodeTextResult = composeRule.onNodeWithTag("textResult")
+            nodeBasicTextField.performTextInput("1 + 1")
+            nodeElevatedButtonExecute.performClick()
+            nodeTextResult.assertTextEquals("\n> 1 + 1\n2")
         }
     }
 
@@ -64,16 +74,38 @@ class TestMainActivity {
                 }
             }
             val nodeBasicTextField = composeRule.onNodeWithTag("basicTextFieldCodeString")
+            val nodeTextResult = composeRule.onNodeWithTag("textResult")
             nodeBasicTextField.performTextInput("1 + 1\n")
             nodeBasicTextField.performTextInput("\n")
-            composeRule.onNodeWithTag("textResult").assertTextEquals("\n> 1 + 1\n2")
+            nodeTextResult.assertTextEquals("\n> 1 + 1\n2")
         }
     }
 
     @Test
-    fun testAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.caoccao.javet.shell", appContext.packageName)
+    fun testIconButtonRefresh() {
+        V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
+            composeRule.setContent {
+                JavetShellTheme {
+                    HomeScreen(v8Runtime = v8Runtime, stringBuilder = StringBuilder())
+                }
+            }
+            val nodeIconButtonRefresh = composeRule.onNodeWithTag("iconButtonRefresh")
+            val nodeElevatedButtonExecute = composeRule.onNodeWithTag("elevatedButtonExecute")
+            val nodeBasicTextField = composeRule.onNodeWithTag("basicTextFieldCodeString")
+            val nodeTextResult = composeRule.onNodeWithTag("textResult")
+            nodeBasicTextField.performTextInput("const a = 1\n")
+            nodeElevatedButtonExecute.performClick()
+            nodeTextResult.assertTextEquals("\n> const a = 1\nundefined")
+            nodeBasicTextField.performTextInput("const a = 1\n")
+            nodeElevatedButtonExecute.performClick()
+            nodeTextResult.assertTextEquals(
+                "\n> const a = 1\nundefined" +
+                        "\n> const a = 1\nSyntaxError: Identifier 'a' has already been declared"
+            )
+            nodeIconButtonRefresh.performClick()
+            nodeBasicTextField.performTextInput("const a = 1\n")
+            nodeElevatedButtonExecute.performClick()
+            nodeTextResult.assertTextEquals("V8 context is refreshed.\n> const a = 1\nundefined")
+        }
     }
 }
