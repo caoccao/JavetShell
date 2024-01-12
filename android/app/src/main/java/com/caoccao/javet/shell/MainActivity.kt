@@ -125,7 +125,7 @@ fun HomeScreen(
                             v8Runtime?.resetContext()
                             stringBuilder.clear().append("V8 context is refreshed.")
                             codeString = ""
-                            resultString = ""
+                            resultString = stringBuilder.toString()
                         },
                         modifier = modifier.testTag("iconButtonRefresh")
                     ) {
