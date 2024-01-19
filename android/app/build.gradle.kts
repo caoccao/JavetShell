@@ -76,7 +76,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("com.caoccao.javet:javet-android:3.0.2")
+    implementation("com.caoccao.javet:javet-android:3.0.3")
     // implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
