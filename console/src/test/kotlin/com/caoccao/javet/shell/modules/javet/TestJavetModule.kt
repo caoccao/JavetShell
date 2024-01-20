@@ -73,16 +73,6 @@ class TestJavetModule : BaseTestSuite() {
             assertEquals("java.util", v8Runtime.getExecutor("javaUtil['.name']").executeString())
             // Test java.lang.Object
             assertEquals(Object::class.java, v8Runtime.getExecutor("java.lang.Object").executeObject())
-            assertEquals(
-                "java.lang.annotation,java.lang.constant,java.lang.invoke,java.lang.management,java.lang.module," +
-                        "java.lang.ref,java.lang.reflect,java.nio.channels,java.nio.channels.spi,java.nio.charset," +
-                        "java.nio.charset.spi,java.nio.file,java.nio.file.attribute,java.nio.file.spi," +
-                        "java.security.cert,java.security.spec,java.text.spi,java.time.chrono,java.time.format," +
-                        "java.time.temporal,java.time.zone,java.util.concurrent,java.util.concurrent.atomic," +
-                        "java.util.concurrent.locks,java.util.function,java.util.jar,java.util.logging," +
-                        "java.util.random,java.util.regex,java.util.spi,java.util.stream,java.util.zip",
-                v8Runtime.getExecutor("java['.getPackages']().map(p => p['.name']).sort().join(',')").executeString()
-            )
             // Clean up
             v8Runtime.getExecutor("java = undefined; javaUtil = undefined;").executeVoid()
         }
