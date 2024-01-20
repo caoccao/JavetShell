@@ -19,6 +19,29 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+object Config {
+    object Projects {
+        // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+        const val BYTE_BUDDY = "net.bytebuddy:byte-buddy:${Versions.BYTE_BUDDY}"
+
+        const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
+        const val JAVET__GROUP = "com.caoccao.javet"
+        const val JAVET__MODULE = "javet"
+        const val JAVET_ANDROID = "com.caoccao.javet:javet-android:${Versions.JAVET}"
+
+        // https://mvnrepository.com/artifact/io.vertx/vertx-core
+        const val VERTX = "io.vertx:vertx-core:${Versions.VERTX}"
+    }
+
+    object Versions {
+        const val BYTE_BUDDY = "1.14.10"
+        const val JAVENODE = "0.4.0"
+        const val JAVET = "3.0.3"
+        const val JETTY_WEBSOCKET = "9.4.53.v20231009"
+        const val VERTX = "4.5.0"
+    }
+}
+
 android {
     namespace = "com.caoccao.javet.shell"
     compileSdk = 34
@@ -62,6 +85,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/io.netty.versions.properties"
         }
     }
 }
@@ -76,7 +101,12 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("com.caoccao.javet:javet-android:3.0.3")
+    implementation(Config.Projects.BYTE_BUDDY)
+    implementation(Config.Projects.JAVENODE) {
+        exclude(group = Config.Projects.JAVET__GROUP, module = Config.Projects.JAVET__MODULE)
+    }
+    implementation(Config.Projects.JAVET_ANDROID)
+    implementation(Config.Projects.VERTX)
     // implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
