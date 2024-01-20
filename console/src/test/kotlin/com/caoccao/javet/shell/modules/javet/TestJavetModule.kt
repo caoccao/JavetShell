@@ -52,7 +52,9 @@ class TestJavetModule : BaseTestSuite() {
             assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
             v8Runtime.globalObject.delete("test")
             assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
-            v8Runtime.getExecutor("javet.gc()").executeVoid()
+            v8Runtime.getExecutor("javet.v8.gc()").executeVoid()
+            assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
+            v8Runtime.lowMemoryNotification()
             assertEquals(initialCallbackContextCount, v8Runtime.callbackContextCount)
         }
     }
@@ -71,13 +73,14 @@ class TestJavetModule : BaseTestSuite() {
             assertEquals("java.util", v8Runtime.getExecutor("javaUtil['.name']").executeString())
             // Test java.lang.Object
             assertEquals(Object::class.java, v8Runtime.getExecutor("java.lang.Object").executeObject())
-            // Test invalid cases
-            assertTrue(
-                v8Runtime.getExecutor("javet.package.abc.def").executeObject<Any>() is JavetVirtualPackage
-            )
-            assertTrue(v8Runtime.getExecutor("java.lang.abcdefg").executeObject<Any>() is JavetVirtualPackage)
             assertEquals(
-                "java.io,java.lang,java.math,java.net,java.nio,java.security,java.text,java.time,java.util",
+                "java.lang.annotation,java.lang.constant,java.lang.invoke,java.lang.management,java.lang.module," +
+                        "java.lang.ref,java.lang.reflect,java.nio.channels,java.nio.channels.spi,java.nio.charset," +
+                        "java.nio.charset.spi,java.nio.file,java.nio.file.attribute,java.nio.file.spi," +
+                        "java.security.cert,java.security.spec,java.text.spi,java.time.chrono,java.time.format," +
+                        "java.time.temporal,java.time.zone,java.util.concurrent,java.util.concurrent.atomic," +
+                        "java.util.concurrent.locks,java.util.function,java.util.jar,java.util.logging," +
+                        "java.util.random,java.util.regex,java.util.spi,java.util.stream,java.util.zip",
                 v8Runtime.getExecutor("java['.getPackages']().map(p => p['.name']).sort().join(',')").executeString()
             )
             // Clean up
