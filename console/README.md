@@ -72,3 +72,5 @@ JavetShell opens a debug port (default 9229) listening to the Chrome DevTools. P
 - V8 Mode
   - [console](https://www.caoccao.com/Javenode/reference/modules/console.html)
   - [timers](https://www.caoccao.com/Javenode/reference/modules/times.html)
+- Both Modes
+  - [javet](https://www.caoccao.com/Javenode/reference/modules/javet.html)
