@@ -57,19 +57,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
+import com.caoccao.javet.interop.converters.JavetProxyConverter
 import com.caoccao.javet.interop.loader.JavetLibLoader
+import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory
+import com.caoccao.javet.javenode.JNEventLoop
+import com.caoccao.javet.javenode.enums.JNModuleType
 import com.caoccao.javet.shell.ui.theme.JavetShellTheme
 import com.caoccao.javet.utils.JavetOSUtils
 import com.caoccao.javet.values.V8Value
+import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : ComponentActivity() {
+    private var daemonRunning = AtomicBoolean(false)
+    private var daemonThread: Thread? = null
+    private var gcScheduled = AtomicBoolean(false)
+    private var logger: ConsoleLogger? = null
+    private var jnEventLoop: JNEventLoop? = null
     private var v8Runtime: V8Runtime? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val stringBuilder = StringBuilder()
+        logger = ConsoleLogger(stringBuilder)
         v8Runtime = V8Host.getV8Instance().createV8Runtime()
+        v8Runtime?.converter = JavetProxyConverter()
+        v8Runtime?.converter?.config?.setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance())
+        v8Runtime?.logger = logger
+        v8Runtime?.setPromiseRejectCallback { _, _, value ->
+            logger?.warn("\n${value}")
+        }
+        jnEventLoop = JNEventLoop(v8Runtime)
+        jnEventLoop?.loadStaticModules(
+            JNModuleType.Console,
+            JNModuleType.Timers,
+            JNModuleType.Javet,
+        )
+        daemonThread = Thread(DaemonThread(v8Runtime!!, daemonRunning, gcScheduled))
+        daemonThread?.start()
         val now = v8Runtime?.getExecutor("new Date()")?.executeZonedDateTime()
-        val stringBuilder = StringBuilder().append(
+        stringBuilder.append(
             """Javet is Java + V8 (JAVa + V + EighT). It is an awesome way of embedding Node.js and V8 in Java.
                             | 
                             | Javet v${JavetLibLoader.LIB_VERSION} supports Android (arm, arm64, x86 and x86_64) ABI >= 24.
@@ -88,13 +114,29 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen(v8Runtime = v8Runtime, stringBuilder = stringBuilder)
+                    HomeScreen(
+                        v8Runtime = v8Runtime,
+                        gcScheduled = gcScheduled,
+                        stringBuilder = stringBuilder,
+                    )
                 }
             }
         }
     }
 
     override fun onDestroy() {
+        jnEventLoop?.await()
+        jnEventLoop?.unloadStaticModules(
+            JNModuleType.Console,
+            JNModuleType.Timers,
+            JNModuleType.Javet,
+        )
+        jnEventLoop?.close()
+        jnEventLoop = null
+        daemonRunning.set(false)
+        daemonThread?.join()
+        daemonThread = null
+        logger?.refresh = {}
         v8Runtime?.close()
         v8Runtime = null
         super.onDestroy()
@@ -105,10 +147,12 @@ class MainActivity : ComponentActivity() {
 fun HomeScreen(
     modifier: Modifier = Modifier,
     v8Runtime: V8Runtime? = null,
+    gcScheduled: AtomicBoolean? = null,
     stringBuilder: StringBuilder = StringBuilder()
 ) {
     var resultString by remember { mutableStateOf(stringBuilder.toString()) }
     var codeString by remember { mutableStateOf("") }
+    (v8Runtime?.logger as ConsoleLogger).refresh = { resultString = stringBuilder.toString() }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -122,7 +166,7 @@ fun HomeScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            v8Runtime?.resetContext()
+                            v8Runtime.resetContext()
                             stringBuilder.clear().append("V8 context is refreshed.")
                             codeString = ""
                             resultString = stringBuilder.toString()
@@ -143,18 +187,20 @@ fun HomeScreen(
         val executeCode = {
             val trimmedCodeString = codeString.trim()
             if (trimmedCodeString.isNotBlank()) {
+                stringBuilder.append("\n> $trimmedCodeString")
                 try {
-                    v8Runtime!!
+                    v8Runtime
                         .getExecutor(codeString)
                         .execute<V8Value>()
                         .use { v8Value ->
-                            stringBuilder.append("\n> $trimmedCodeString\n$v8Value")
+                            stringBuilder.append("\n$v8Value")
                         }
                     codeString = ""
                 } catch (t: Throwable) {
-                    stringBuilder.append("\n> $trimmedCodeString\n${t.message}")
+                    stringBuilder.append("\n${t.message}")
                 } finally {
                     resultString = stringBuilder.toString()
+                    gcScheduled?.set(true)
                 }
             }
         }

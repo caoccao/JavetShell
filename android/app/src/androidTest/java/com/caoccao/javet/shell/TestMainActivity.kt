@@ -51,6 +51,7 @@ class TestMainActivity {
     @Test
     fun testButtonExecute() {
         V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
+            v8Runtime.logger = ConsoleLogger()
             composeRule.setContent {
                 JavetShellTheme {
                     HomeScreen(v8Runtime = v8Runtime, stringBuilder = StringBuilder())
@@ -68,6 +69,7 @@ class TestMainActivity {
     @Test
     fun testBasicTextFieldExecute() {
         V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
+            v8Runtime.logger = ConsoleLogger()
             composeRule.setContent {
                 JavetShellTheme {
                     HomeScreen(v8Runtime = v8Runtime, stringBuilder = StringBuilder())
@@ -84,6 +86,7 @@ class TestMainActivity {
     @Test
     fun testIconButtonRefresh() {
         V8Host.getV8Instance().createV8Runtime<V8Runtime>().use { v8Runtime ->
+            v8Runtime.logger = ConsoleLogger()
             composeRule.setContent {
                 JavetShellTheme {
                     HomeScreen(v8Runtime = v8Runtime, stringBuilder = StringBuilder())
