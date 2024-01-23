@@ -22,10 +22,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,6 +37,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,10 +54,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.caoccao.javet.interop.V8Host
@@ -152,6 +159,7 @@ fun HomeScreen(
 ) {
     var resultString by remember { mutableStateOf(stringBuilder.toString()) }
     var codeString by remember { mutableStateOf("") }
+    val moduleMode = remember { mutableStateOf(false) }
     (v8Runtime?.logger as ConsoleLogger).refresh = { resultString = stringBuilder.toString() }
     Scaffold(
         topBar = {
@@ -170,6 +178,7 @@ fun HomeScreen(
                             stringBuilder.clear().append("V8 context is refreshed.")
                             codeString = ""
                             resultString = stringBuilder.toString()
+                            moduleMode.value = false
                         },
                         modifier = modifier.testTag("iconButtonRefresh")
                     ) {
@@ -191,6 +200,8 @@ fun HomeScreen(
                 try {
                     v8Runtime
                         .getExecutor(codeString)
+                        .setResourceName("main.js")
+                        .setModule(moduleMode.value)
                         .execute<V8Value>()
                         .use { v8Value ->
                             stringBuilder.append("\n$v8Value")
@@ -231,15 +242,36 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .weight(0.3F)
             ) {
-                ElevatedButton(
-                    onClick = executeCode,
-                    shape = RoundedCornerShape(10),
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(start = padding, end = padding)
-                        .testTag("elevatedButtonExecute")
                 ) {
-                    Text(text = stringResource(id = R.string.button_execute))
+                    Checkbox(
+                        checked = moduleMode.value,
+                        onCheckedChange = { moduleMode.value = it },
+                        modifier = modifier
+                            .testTag("checkboxModuleMode")
+                    )
+                    Text(
+                        text = "Module",
+                        modifier = modifier
+                            .clickable(role = Role.Checkbox) {
+                                moduleMode.value = !moduleMode.value
+                            }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    ElevatedButton(
+                        onClick = executeCode,
+                        shape = RoundedCornerShape(10),
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(start = padding)
+                            .testTag("elevatedButtonExecute")
+                    ) {
+                        Text(text = stringResource(id = R.string.button_execute))
+                    }
                 }
                 BasicTextField(
                     value = codeString,
