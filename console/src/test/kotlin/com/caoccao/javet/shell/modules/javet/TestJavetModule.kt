@@ -49,11 +49,11 @@ class TestJavetModule : BaseTestSuite() {
         v8Runtimes.forEach { v8Runtime ->
             val initialCallbackContextCount = v8Runtime.callbackContextCount
             v8Runtime.globalObject.set("test", String::class.java)
-            assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
+            assertEquals(initialCallbackContextCount + 6, v8Runtime.callbackContextCount)
             v8Runtime.globalObject.delete("test")
-            assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
+            assertEquals(initialCallbackContextCount + 6, v8Runtime.callbackContextCount)
             v8Runtime.getExecutor("javet.v8.gc()").executeVoid()
-            assertEquals(initialCallbackContextCount + 5, v8Runtime.callbackContextCount)
+            assertEquals(initialCallbackContextCount + 7, v8Runtime.callbackContextCount)
             v8Runtime.lowMemoryNotification()
             assertEquals(initialCallbackContextCount, v8Runtime.callbackContextCount)
         }

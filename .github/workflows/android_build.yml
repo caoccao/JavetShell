@@ -11,10 +11,12 @@ on:
     paths-ignore:
       - "**.md"
       - "docs/**"
+      - "console/**"
   push:
     paths-ignore:
       - "**.md"
       - "docs/**"
+      - "console/**"
 
 jobs:
   build_apk:
@@ -35,7 +37,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v3
       with:
-        gradle-version: 8.2
+        gradle-version: 8.5
 
     - name: Build the Artifact
       run: |
