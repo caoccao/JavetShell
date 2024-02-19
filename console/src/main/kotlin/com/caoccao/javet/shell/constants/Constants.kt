@@ -55,10 +55,12 @@ object Constants {
     }
 
     object Javet {
-        val JAVET_PROXY_CONVERTER = JavetProxyConverter()
-
-        init {
-            JAVET_PROXY_CONVERTER.config.setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance())
+        val JAVET_PROXY_CONVERTER = JavetProxyConverter().apply {
+            config.setProxyArrayEnabled(true)
+            config.setProxyListEnabled(true)
+            config.setProxyMapEnabled(true)
+            config.setProxySetEnabled(true)
+            config.setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance())
         }
     }
 }

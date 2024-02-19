@@ -87,8 +87,13 @@ class MainActivity : ComponentActivity() {
         val stringBuilder = StringBuilder()
         logger = ConsoleLogger(stringBuilder)
         v8Runtime = V8Host.getV8Instance().createV8Runtime()
-        v8Runtime?.converter = JavetProxyConverter()
-        v8Runtime?.converter?.config?.setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance())
+        v8Runtime?.converter = JavetProxyConverter().apply {
+            config.setProxyArrayEnabled(true)
+            config.setProxyListEnabled(true)
+            config.setProxyMapEnabled(true)
+            config.setProxySetEnabled(true)
+            config.setReflectionObjectFactory(JavetReflectionObjectFactory.getInstance())
+        }
         v8Runtime?.logger = logger
         v8Runtime?.setPromiseRejectCallback { _, _, value ->
             logger?.warn("\n${value}")
