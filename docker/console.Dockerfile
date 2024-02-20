@@ -17,7 +17,7 @@
 #   docker build -t sjtucaocao/javet-shell:amd64-latest --platform linux/amd64 -f docker/console.Dockerfile .
 #   docker build -t sjtucaocao/javet-shell:arm64-latest --platform linux/arm64 -f docker/console.Dockerfile .
 
-FROM gradle:8.2-jdk17-jammy as build
+FROM gradle:8.5-jdk17-jammy as build
 
 ENV VERSION=0.1.0
 
