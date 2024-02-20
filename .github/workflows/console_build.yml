@@ -22,8 +22,8 @@ env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
 jobs:
-  build_jar_for_linux_and_windows_x86_64:
-    name: Build Jar for Linux and Windows x86_64
+  jar_for_linux_and_windows_x86_64:
+    name: Jar for Linux and Windows x86_64
     runs-on: ubuntu-latest
 
     steps:
@@ -53,8 +53,8 @@ jobs:
         name: javet-shell-console-linux-windows_x86-64
         path: console/build/libs/*.jar
 
-  build_jar_for_macos:
-    name: Build Jar for MacOS
+  jar_for_macos:
+    name: Jar for MacOS
     runs-on: macos-latest
 
     steps:
@@ -84,17 +84,14 @@ jobs:
         name: javet-shell-console-macos
         path: console/build/libs/*.jar
 
-  build_docker_image_for_linux_amd64:
-    name: Build Docker Image for Linux amd64
+  docker_image_for_linux_amd64:
+    name: Docker Image for Linux amd64
     runs-on: ubuntu-latest
 
     steps:
 
     - name: Checkout the code
       uses: actions/checkout@v4
-
-    - uses: docker-practice/actions-setup-docker@master
-      timeout-minutes: 12
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3
@@ -106,27 +103,3 @@ jobs:
       run: |
         docker build -t ${{ env.DOCKERHUB_USERNAME }}/javet-shell:amd64-latest -f docker/console.Dockerfile .
         docker push ${{ env.DOCKERHUB_USERNAME }}/javet-shell:amd64-latest
-
-  build_docker_image_for_linux_arm64:
-    name: Build Docker Image for Linux arm64
-    runs-on: macos-14
-
-    steps:
-
-    - name: Checkout the code
-      uses: actions/checkout@v4
-
-    - uses: docker-practice/actions-setup-docker@master
-      timeout-minutes: 12
-
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Docker Build and Push
-      run: |
-        docker build -t ${{ env.DOCKERHUB_USERNAME }}/javet-shell:arm64-latest -f docker/console.Dockerfile .
-        docker push ${{ env.DOCKERHUB_USERNAME }}/javet-shell:arm64-latest
-
