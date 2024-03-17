@@ -16,7 +16,7 @@
   -->
 
 <resources>
-    <string name="app_name">Javet Shell</string>
+    <string name="app_name">Javet Shell (V8)</string>
     <string name="button_execute">Execute</string>
     <string name="icon_refresh">Refresh</string>
 </resources>

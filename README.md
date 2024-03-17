@@ -18,7 +18,7 @@ Javet Shell is a console or Android application that provides Node.js flavored c
 - Download the apk file from the latest [action](https://github.com/caoccao/JavetShell/actions/workflows/android_build.yml).
 - Install the apk file.
 
-Please refer to this [page](android) for details.
+Please refer to [Android (V8)](android_v8) for details.
 
 ### Console
 

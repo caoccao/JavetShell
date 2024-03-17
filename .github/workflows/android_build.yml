@@ -41,11 +41,11 @@ jobs:
 
     - name: Build the Artifact
       run: |
-        cd android
+        cd android_v8
         gradle build --debug
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-shell-android
-        path: android/app/build/outputs/apk/release/*.apk
+        name: javet-shell-android-v8
+        path: android_v8/app/build/outputs/apk/release/*.apk

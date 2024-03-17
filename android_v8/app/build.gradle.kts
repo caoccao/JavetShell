@@ -27,7 +27,7 @@ object Config {
         const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
         const val JAVET__GROUP = "com.caoccao.javet"
         const val JAVET__MODULE = "javet"
-        const val JAVET_ANDROID = "com.caoccao.javet:javet-android:${Versions.JAVET}"
+        const val JAVET_ANDROID = "com.caoccao.javet:javet-android-v8:${Versions.JAVET}"
 
         // https://mvnrepository.com/artifact/io.vertx/vertx-core
         const val VERTX = "io.vertx:vertx-core:${Versions.VERTX}"
@@ -35,8 +35,8 @@ object Config {
 
     object Versions {
         const val BYTE_BUDDY = "1.14.10"
-        const val JAVENODE = "0.5.0"
-        const val JAVET = "3.0.4"
+        const val JAVENODE = "0.6.0"
+        const val JAVET = "3.1.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val VERTX = "4.5.0"
     }
@@ -52,7 +52,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
-        setProperty("archivesBaseName", "javet-shell-${versionName}")
+        setProperty("archivesBaseName", "javet-shell-v8-${versionName}")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -96,7 +96,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.02.02"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -111,7 +111,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.02"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
