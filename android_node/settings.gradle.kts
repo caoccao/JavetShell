@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Javet Shell Android (V8)"
+rootProject.name = "Javet Shell Android (Node)"
 include(":app")

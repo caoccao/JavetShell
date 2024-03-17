@@ -20,7 +20,13 @@ on:
 
 jobs:
   build_apk:
-    name: Build APK
+    strategy:
+      matrix:
+        include:
+          - mode: node
+          - mode: v8
+
+    name: Build APK for ${{ matrix.mode }}
     runs-on: ubuntu-latest
 
     steps:
@@ -41,11 +47,11 @@ jobs:
 
     - name: Build the Artifact
       run: |
-        cd android_v8
+        cd android_${{ matrix.mode }}
         gradle build --debug
 
     - name: Upload the Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: javet-shell-android-v8
-        path: android_v8/app/build/outputs/apk/release/*.apk
+        name: javet-shell-android-${{ matrix.mode }}
+        path: android_${{ matrix.mode }}/app/build/outputs/apk/release/*.apk
