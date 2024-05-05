@@ -77,6 +77,7 @@ object Config {
 plugins {
     application
     kotlin("jvm") version "1.9.21"
+    id("org.graalvm.buildtools.native") version "0.10.1"
 }
 
 repositories {
@@ -129,4 +130,12 @@ tasks.test {
 
 kotlin {
     jvmToolchain(17)
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            fallback.set(true)
+        }
+    }
 }
