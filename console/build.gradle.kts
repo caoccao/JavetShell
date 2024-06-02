@@ -33,7 +33,7 @@ object Config {
         const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
         const val JAVET_LINUX_ARM64 = "com.caoccao.javet:javet-linux-arm64:${Versions.JAVET}"
         const val JAVET_MACOS = "com.caoccao.javet:javet-macos:${Versions.JAVET}"
-        const val JAVET_SANITIZER = "com.caoccao.javet.sanitizer:javet-sanitizer:${Versions.JAVET_SANITIZER}"
+        const val JAVET_SWC4J = "com.caoccao.javet:swc4j:${Versions.JAVET_SWC4J}"
 
         // https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/javax-websocket-server-impl
         const val JETTY_JAVAX_WEBSOCKET_SERVER_IMPL =
@@ -62,10 +62,10 @@ object Config {
     object Versions {
         const val ANTLR4 = "4.13.1"
         const val BYTE_BUDDY = "1.14.10"
-        const val JAVENODE = "0.6.0"
-        const val JAVET = "3.1.0"
-        const val JAVET_SANITIZER = "0.2.0-antlr-4.13.1"
+        const val JAVENODE = "0.7.0"
+        const val JAVET = "3.1.2"
         const val JAVET_SHELL = "0.1.0"
+        const val JAVET_SWC4J = "0.8.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
         const val KOTLIN_STDLIB_JDK8 = "1.9.21"
@@ -100,7 +100,7 @@ dependencies {
     } else {
         implementation(Config.Projects.JAVET)
     }
-    implementation(Config.Projects.JAVET_SANITIZER)
+    implementation(Config.Projects.JAVET_SWC4J)
     implementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
     implementation(Config.Projects.JETTY_WEBSOCKET_SERVER)
     implementation(Config.Projects.KOTLIN_STDLIB_JDK8)

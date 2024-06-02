@@ -21,15 +21,17 @@ import com.caoccao.javet.exceptions.JavetExecutionException
 import com.caoccao.javet.interfaces.IJavetLogger
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
-import com.caoccao.javet.sanitizer.antlr.JavaScriptParser
 import com.caoccao.javet.sanitizer.exceptions.JavetSanitizerException
-import com.caoccao.javet.sanitizer.parsers.JavaScriptStatementListParser
-import com.caoccao.javet.sanitizer.utils.StringUtils
 import com.caoccao.javet.shell.constants.Constants
 import com.caoccao.javet.shell.entities.Options
 import com.caoccao.javet.shell.enums.ExitCode
 import com.caoccao.javet.shell.utils.JavetShellDefaultLogger
 import com.caoccao.javet.shell.utils.JavetShellSilentLogger
+import com.caoccao.javet.swc4j.Swc4j
+import com.caoccao.javet.swc4j.enums.Swc4jMediaType
+import com.caoccao.javet.swc4j.enums.Swc4jParseMode
+import com.caoccao.javet.swc4j.options.Swc4jParseOptions
+import com.caoccao.javet.utils.StringUtils
 import com.caoccao.javet.values.V8Value
 import sun.misc.Signal
 import java.io.File
@@ -37,6 +39,10 @@ import java.util.*
 
 abstract class BaseJavetShell(protected val options: Options) {
     protected val logger = JavetShellDefaultLogger()
+    protected val swc4j = Swc4j()
+    protected val parseOptions = Swc4jParseOptions()
+        .setParseMode(Swc4jParseMode.Program)
+        .setMediaType(Swc4jMediaType.JavaScript)
     protected abstract val prompt: String
 
     protected abstract fun createEventLoop(
@@ -63,7 +69,6 @@ abstract class BaseJavetShell(protected val options: Options) {
                 registerPromiseRejectCallback(v8Runtime)
                 Scanner(System.`in`).use { scanner ->
                     val sb = StringBuilder()
-                    var isESM = false
                     var isMultiline = false
                     var isBlockCompleted = false
                     while (eventLoop.running) {
@@ -84,25 +89,19 @@ abstract class BaseJavetShell(protected val options: Options) {
                             if (eventLoop.running) {
                                 val codeString = sb.toString()
                                 if (codeString.isNotEmpty()) {
-                                    if (!isESM) {
-                                        val parser = if (isBlockCompleted) {
-                                            try {
-                                                JavaScriptStatementListParser(codeString).parse()
-                                            } catch (e: JavetSanitizerException) {
-                                                null
-                                            }
-                                        } else {
-                                            JavaScriptStatementListParser(codeString).parse()
+                                    val isESM = if (isBlockCompleted) {
+                                        try {
+                                            swc4j.parse(codeString, parseOptions).parseMode == Swc4jParseMode.Module
+                                        } catch (ignored: Throwable) {
+                                            false
                                         }
-                                        val context = parser?.javaScriptStatementParsers?.first()?.context
-                                        if (context != null && context.childCount > 0) {
-                                            isESM = context.getChild(0) is JavaScriptParser.ImportStatementContext
-                                        }
+                                    } else {
+                                        false
                                     }
                                     v8Runtime
                                         .getExecutor(codeString)
                                         .setResourceName(File(options.scriptName).absolutePath)
-                                        .setModule(isESM && isBlockCompleted)
+                                        .setModule(isESM)
                                         .execute<V8Value>()
                                         .use { v8Value ->
                                             logger.info(v8Value.toString())
@@ -136,9 +135,6 @@ abstract class BaseJavetShell(protected val options: Options) {
                         } finally {
                             if (!isMultiline) {
                                 sb.clear()
-                            }
-                            if (isBlockCompleted) {
-                                isESM = false
                             }
                             isBlockCompleted = false
                         }

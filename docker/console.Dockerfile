@@ -34,8 +34,8 @@ RUN gradle build
 
 # Build Cache
 WORKDIR /console/build/libs
-RUN unzip ./javet-shell-${VERSION}.jar '*.so'
-RUN zip -d ./javet-shell-${VERSION}.jar *.dll *.dylib *.so
+RUN unzip ./javet-shell-${VERSION}.jar 'libjavet-*.so'
+RUN zip -d ./javet-shell-${VERSION}.jar *.dll *.dylib libjavet-*.so
 
 # Build Shell Scripts
 WORKDIR /console/build/libs
