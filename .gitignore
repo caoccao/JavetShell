@@ -36,6 +36,7 @@ gradle-app.setting
 *.jar
 *.dll
 *.dylib
+*.exe
 *.so
 *.war
 *.nar
