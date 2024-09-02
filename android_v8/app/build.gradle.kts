@@ -36,7 +36,7 @@ object Config {
     object Versions {
         const val BYTE_BUDDY = "1.14.10"
         const val JAVENODE = "0.7.0"
-        const val JAVET = "3.1.2"
+        const val JAVET = "3.1.6"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val VERTX = "4.5.0"
     }
@@ -108,6 +108,7 @@ dependencies {
     implementation(Config.Projects.JAVET_ANDROID)
     implementation(Config.Projects.VERTX)
     // implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    // implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
