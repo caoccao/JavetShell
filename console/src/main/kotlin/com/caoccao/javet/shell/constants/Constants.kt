@@ -16,8 +16,8 @@
 
 package com.caoccao.javet.shell.constants
 
+import com.caoccao.javet.buddy.interop.proxy.JavetReflectionObjectFactory
 import com.caoccao.javet.interop.converters.JavetProxyConverter
-import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory
 import com.caoccao.javet.shell.enums.RuntimeType
 
 object Constants {

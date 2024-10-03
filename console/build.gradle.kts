@@ -23,17 +23,16 @@ object Config {
     const val URL = "https://github.com/caoccao/JavetShell"
 
     object Projects {
-        // https://mvnrepository.com/artifact/org.antlr/antlr4
-        const val ANTLR4 = "org.antlr:antlr4:${Versions.ANTLR4}"
-
-        // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
-        const val BYTE_BUDDY = "net.bytebuddy:byte-buddy:${Versions.BYTE_BUDDY}"
-
-        const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
         const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
         const val JAVET_LINUX_ARM64 = "com.caoccao.javet:javet-linux-arm64:${Versions.JAVET}"
         const val JAVET_MACOS = "com.caoccao.javet:javet-macos:${Versions.JAVET}"
+
+        // https://mvnrepository.com/artifact/com.caoccao.javet.buddy/javet-buddy
+        const val JAVET_BUDDY = "com.caoccao.javet.buddy:javet-buddy:${Versions.JAVET_BUDDY}"
+
         const val JAVET_SWC4J = "com.caoccao.javet:swc4j:${Versions.JAVET_SWC4J}"
+
+        const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
 
         // https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/javax-websocket-server-impl
         const val JETTY_JAVAX_WEBSOCKET_SERVER_IMPL =
@@ -60,12 +59,11 @@ object Config {
     }
 
     object Versions {
-        const val ANTLR4 = "4.13.1"
-        const val BYTE_BUDDY = "1.14.10"
-        const val JAVENODE = "0.7.0"
-        const val JAVET = "3.1.2"
+        const val JAVET = "3.1.8"
+        const val JAVET_BUDDY = "0.2.0"
         const val JAVET_SHELL = "0.1.0"
-        const val JAVET_SWC4J = "0.8.0"
+        const val JAVET_SWC4J = "1.0.0"
+        const val JAVENODE = "0.8.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
         const val KOTLIN_STDLIB_JDK8 = "1.9.21"
@@ -88,9 +86,6 @@ group = Config.GROUP_ID
 version = Config.VERSION
 
 dependencies {
-    implementation(Config.Projects.ANTLR4)
-    implementation(Config.Projects.BYTE_BUDDY)
-    implementation(Config.Projects.JAVENODE)
     val os = OperatingSystem.current()
     val cpuArch = System.getProperty("os.arch")
     if (os.isMacOsX) {
@@ -100,7 +95,9 @@ dependencies {
     } else {
         implementation(Config.Projects.JAVET)
     }
+    implementation(Config.Projects.JAVET_BUDDY)
     implementation(Config.Projects.JAVET_SWC4J)
+    implementation(Config.Projects.JAVENODE)
     implementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
     implementation(Config.Projects.JETTY_WEBSOCKET_SERVER)
     implementation(Config.Projects.KOTLIN_STDLIB_JDK8)
