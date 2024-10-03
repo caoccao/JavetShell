@@ -62,11 +62,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.caoccao.javet.buddy.interop.proxy.JavetReflectionObjectFactory
 import com.caoccao.javet.interop.V8Host
 import com.caoccao.javet.interop.V8Runtime
 import com.caoccao.javet.interop.converters.JavetProxyConverter
 import com.caoccao.javet.interop.loader.JavetLibLoader
-import com.caoccao.javet.interop.proxy.JavetReflectionObjectFactory
 import com.caoccao.javet.javenode.JNEventLoop
 import com.caoccao.javet.javenode.enums.JNModuleType
 import com.caoccao.javet.shell.ui.theme.JavetShellTheme
