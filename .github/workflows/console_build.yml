@@ -74,18 +74,18 @@ jobs:
         uses: edgarrc/action-7z@v1
         if: matrix.name == 'Linux x86_64'
         with:
-          args: 7z d build/libs/*.jar ${{ matrix.zip_exclude_files }}
+          args: 7z d console/build/libs/*.jar ${{ matrix.zip_exclude_files }}
 
       - name: Remove Binary Files for MacOS
         if: matrix.name == 'MacOS x86_64' || matrix.name == 'MacOS arm64'
         run: |
-          7z d build/libs/*.jar ${{ matrix.zip_exclude_files }}
+          7z d console/build/libs/*.jar ${{ matrix.zip_exclude_files }}
 
       - name: Remove Binary Files for Windows
         if: matrix.name == 'Windows x86_64'
         shell: bash
         run: |
-          7z d build/libs/*.jar ${{ matrix.zip_exclude_files }}
+          7z d console/build/libs/*.jar ${{ matrix.zip_exclude_files }}
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v4
