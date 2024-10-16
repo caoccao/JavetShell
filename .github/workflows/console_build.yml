@@ -33,7 +33,7 @@ jobs:
           - name: Linux x86_64
             image: ubuntu-latest
             jar_name: linux-x86-64
-            zip_exclude_files: "*.dll *arm64*.so dylib"
+            zip_exclude_files: "*.dll *arm64*.so *.dylib"
           - name: MacOS x86_64
             image: macos-13
             jar_name: macos-x86-64
@@ -83,9 +83,9 @@ jobs:
 
       - name: Remove Binary Files for Windows
         if: matrix.name == 'Windows x86_64'
+        shell: bash
         run: |
-          choco install 7zip.install
-          7z d build\libs\*.jar ${{ matrix.zip_exclude_files }}
+          7z d build/libs/*.jar ${{ matrix.zip_exclude_files }}
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v4
