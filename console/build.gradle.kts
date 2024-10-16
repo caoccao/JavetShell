@@ -23,9 +23,9 @@ object Config {
     const val URL = "https://github.com/caoccao/JavetShell"
 
     object Projects {
-        const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
-        const val JAVET_LINUX_ARM64 = "com.caoccao.javet:javet-linux-arm64:${Versions.JAVET}"
-        const val JAVET_MACOS = "com.caoccao.javet:javet-macos:${Versions.JAVET}"
+        const val JAVET = "com.caoccao.javet:javet-core:${Versions.JAVET}"
+        const val JAVET_NODE = "com.caoccao.javet:javet-node"
+        const val JAVET_V8 = "com.caoccao.javet:javet-v8"
 
         // https://mvnrepository.com/artifact/com.caoccao.javet.buddy/javet-buddy
         const val JAVET_BUDDY = "com.caoccao.javet.buddy:javet-buddy:${Versions.JAVET_BUDDY}"
@@ -59,7 +59,7 @@ object Config {
     }
 
     object Versions {
-        const val JAVET = "3.1.8"
+        const val JAVET = "4.0.0"
         const val JAVET_BUDDY = "0.2.0"
         const val JAVET_SHELL = "0.1.0"
         const val JAVET_SWC4J = "1.1.0"
@@ -85,16 +85,18 @@ repositories {
 group = Config.GROUP_ID
 version = Config.VERSION
 
+
 dependencies {
     val os = OperatingSystem.current()
-    val cpuArch = System.getProperty("os.arch")
-    if (os.isMacOsX) {
-        implementation(Config.Projects.JAVET_MACOS)
-    } else if (os.isLinux && (cpuArch == "aarch64" || cpuArch == "arm64")) {
-        implementation(Config.Projects.JAVET_LINUX_ARM64)
-    } else {
-        implementation(Config.Projects.JAVET)
-    }
+    val arch = System.getProperty("os.arch")
+    val osType = if (os.isWindows) "windows" else
+        if (os.isMacOsX) "macos" else
+            if (os.isLinux) "linux" else ""
+    val archType = if (arch == "aarch64" || arch == "arm64") "arm64" else "x86_64"
+
+    implementation(Config.Projects.JAVET)
+    implementation("${Config.Projects.JAVET_NODE}-$osType-$archType:${Config.Versions.JAVET}")
+    implementation("${Config.Projects.JAVET_V8}-$osType-$archType:${Config.Versions.JAVET}")
     implementation(Config.Projects.JAVET_BUDDY)
     implementation(Config.Projects.JAVET_SWC4J)
     implementation(Config.Projects.JAVENODE)
