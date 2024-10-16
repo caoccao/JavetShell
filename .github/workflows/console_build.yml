@@ -85,7 +85,7 @@ jobs:
         if: matrix.name == 'Windows x86_64'
         run: |
           choco install 7zip.install
-          7z d build/libs/*.jar ${{ matrix.zip_exclude_files }}
+          7z d build\libs\*.jar ${{ matrix.zip_exclude_files }}
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v4
