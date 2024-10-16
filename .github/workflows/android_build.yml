@@ -9,11 +9,15 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
+      - .github/**
+      - "!.github/workflows/android_build.yml"
       - "**.md"
       - "docs/**"
       - "console/**"
   push:
     paths-ignore:
+      - .github/**
+      - "!.github/workflows/android_build.yml"
       - "**.md"
       - "docs/**"
       - "console/**"
