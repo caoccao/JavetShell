@@ -62,7 +62,7 @@ object Config {
         const val JAVET = "4.0.0"
         const val JAVET_BUDDY = "0.2.0"
         const val JAVET_SHELL = "0.1.0"
-        const val JAVET_SWC4J = "1.1.0"
+        const val JAVET_SWC4J = "1.3.0"
         const val JAVENODE = "0.8.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
