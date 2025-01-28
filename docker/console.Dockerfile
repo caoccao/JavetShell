@@ -17,7 +17,7 @@
 #   docker build -t sjtucaocao/javet-shell:amd64-latest --platform linux/amd64 -f docker/console.Dockerfile .
 #   docker build -t sjtucaocao/javet-shell:arm64-latest --platform linux/arm64 -f docker/console.Dockerfile .
 
-FROM gradle:8.5-jdk17-jammy as build
+FROM gradle:8.5-jdk17-jammy AS build
 
 ENV VERSION=0.1.0
 
@@ -44,7 +44,7 @@ RUN echo "java -Djavet.lib.loading.path=/ -Djavet.lib.loading.type=custom -jar j
 RUN chmod +x *.sh
 
 # Deploy
-FROM eclipse-temurin:17-jre-jammy as main
+FROM eclipse-temurin:17-jre-jammy AS main
 WORKDIR /
 COPY --from=build /console/build/libs/javet* .
 COPY --from=build /console/build/libs/libjavet* .
