@@ -23,7 +23,10 @@ object Config {
     const val URL = "https://github.com/caoccao/JavetShell"
 
     object Projects {
-        const val JAVET = "com.caoccao.javet:javet-core:${Versions.JAVET}"
+        // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+        const val BYTE_BUDDY = "net.bytebuddy:byte-buddy:${Versions.BYTE_BUDDY}"
+
+        const val JAVET = "com.caoccao.javet:javet:${Versions.JAVET}"
         const val JAVET_NODE = "com.caoccao.javet:javet-node"
         const val JAVET_V8 = "com.caoccao.javet:javet-v8"
 
@@ -59,10 +62,11 @@ object Config {
     }
 
     object Versions {
-        const val JAVET = "4.0.0"
-        const val JAVET_BUDDY = "0.2.0"
+        const val BYTE_BUDDY = "1.15.5"
+        const val JAVET = "4.1.1"
+        const val JAVET_BUDDY = "0.4.0"
         const val JAVET_SHELL = "0.1.0"
-        const val JAVET_SWC4J = "1.3.0"
+        const val JAVET_SWC4J = "1.4.0"
         const val JAVENODE = "0.8.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
         const val JUNIT = "5.10.1"
@@ -94,6 +98,7 @@ dependencies {
             if (os.isLinux) "linux" else ""
     val archType = if (arch == "aarch64" || arch == "arm64") "arm64" else "x86_64"
 
+    implementation(Config.Projects.BYTE_BUDDY)
     implementation(Config.Projects.JAVET)
     implementation("${Config.Projects.JAVET_NODE}-$osType-$archType:${Config.Versions.JAVET}")
     implementation("${Config.Projects.JAVET_V8}-$osType-$archType:${Config.Versions.JAVET}")
