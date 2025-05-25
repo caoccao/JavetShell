@@ -33,19 +33,15 @@ jobs:
           - name: Linux x86_64
             image: ubuntu-latest
             jar_name: linux-x86-64
-            zip_exclude_files: "*.dll *arm64*.so *.dylib"
           - name: MacOS x86_64
             image: macos-13
             jar_name: macos-x86-64
-            zip_exclude_files: "*.dll *.so *arm64*.dylib"
           - name: MacOS arm64
             image: macos-14
             jar_name: macos-arm64
-            zip_exclude_files: "*.dll *.so *x86_64*.dylib"
           - name: Windows x86_64
             image: windows-latest
             jar_name: windows-x86-64
-            zip_exclude_files: "*arm64*.dll *.dylib *.so"
 
     name: Build Jar for ${{ matrix.name }}
     runs-on: ${{ matrix.image }}
@@ -69,11 +65,6 @@ jobs:
         run: |
           cd console
           gradle build --debug
-
-      - name: Remove Binary Files for MacOS
-        if: matrix.name == 'MacOS x86_64' || matrix.name == 'MacOS arm64'
-        run: |
-          7z d console/build/libs/*.jar ${{ matrix.zip_exclude_files }}
 
       - name: Upload the Artifact
         uses: actions/upload-artifact@v4

@@ -34,6 +34,7 @@ object Config {
         const val JAVET_BUDDY = "com.caoccao.javet.buddy:javet-buddy:${Versions.JAVET_BUDDY}"
 
         const val JAVET_SWC4J = "com.caoccao.javet:swc4j:${Versions.JAVET_SWC4J}"
+        const val JAVET_SWC4J_BIN = "com.caoccao.javet:swc4j"
 
         const val JAVENODE = "com.caoccao.javet:javenode:${Versions.JAVENODE}"
 
@@ -63,13 +64,13 @@ object Config {
 
     object Versions {
         const val BYTE_BUDDY = "1.15.5"
-        const val JAVET = "4.1.1"
+        const val JAVET = "4.1.4"
         const val JAVET_BUDDY = "0.4.0"
         const val JAVET_SHELL = "0.1.0"
-        const val JAVET_SWC4J = "1.4.0"
+        const val JAVET_SWC4J = "1.6.0"
         const val JAVENODE = "0.8.0"
         const val JETTY_WEBSOCKET = "9.4.53.v20231009"
-        const val JUNIT = "5.10.1"
+        const val JUNIT = "5.12.2"
         const val KOTLIN_STDLIB_JDK8 = "1.9.21"
         const val KOTLINX_CLI = "0.3.6"
         const val VERTX = "4.5.0"
@@ -104,6 +105,7 @@ dependencies {
     implementation("${Config.Projects.JAVET_V8}-$osType-$archType:${Config.Versions.JAVET}")
     implementation(Config.Projects.JAVET_BUDDY)
     implementation(Config.Projects.JAVET_SWC4J)
+    implementation("${Config.Projects.JAVET_SWC4J_BIN}-$osType-$archType:${Config.Versions.JAVET_SWC4J}")
     implementation(Config.Projects.JAVENODE)
     implementation(Config.Projects.JETTY_JAVAX_WEBSOCKET_SERVER_IMPL)
     implementation(Config.Projects.JETTY_WEBSOCKET_SERVER)

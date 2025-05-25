@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024. caoccao.com Sam Cao
+# Copyright (c) 2021-2025. caoccao.com Sam Cao
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ RUN gradle build
 # Build Cache
 WORKDIR /console/build/libs
 RUN unzip ./javet-shell-${VERSION}.jar 'libjavet-*.so'
-RUN zip -d ./javet-shell-${VERSION}.jar *.dll *.dylib libjavet-*.so
+RUN zip -d ./javet-shell-${VERSION}.jar libjavet-*.so
 
 # Build Shell Scripts
 WORKDIR /console/build/libs
