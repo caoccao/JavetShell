@@ -17,13 +17,13 @@
 #   docker build -t sjtucaocao/javet-shell:amd64-latest --platform linux/amd64 -f docker/console.Dockerfile .
 #   docker build -t sjtucaocao/javet-shell:arm64-latest --platform linux/arm64 -f docker/console.Dockerfile .
 
-FROM gradle:8.5-jdk17-jammy AS build
+FROM gradle:8.14-jdk17-jammy AS build
 
 ENV VERSION=0.1.0
 
 # Preparation
 RUN apt-get update -y
-RUN apt-get install -y unzip zip wget
+RUN apt-get install -y unzip zip wget libatomic1
 
 # Build JavetShell
 WORKDIR /

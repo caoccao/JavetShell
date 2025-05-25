@@ -64,7 +64,7 @@ object Config {
 
     object Versions {
         const val BYTE_BUDDY = "1.15.5"
-        const val JAVET = "4.1.1"
+        const val JAVET = "4.1.4"
         const val JAVET_BUDDY = "0.4.0"
         const val JAVET_SHELL = "0.1.0"
         const val JAVET_SWC4J = "1.6.0"
