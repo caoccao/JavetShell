@@ -23,7 +23,7 @@ ENV VERSION=0.1.0
 
 # Preparation
 RUN apt-get update -y
-RUN apt-get install -y unzip zip wget libatomic1
+RUN apt-get install -y unzip zip wget
 
 # Build JavetShell
 WORKDIR /
@@ -45,9 +45,6 @@ RUN chmod +x *.sh
 
 # Deploy
 FROM eclipse-temurin:17-jre-jammy AS main
-
-RUN apt-get update -y
-RUN apt-get install -y libatomic1
 
 WORKDIR /
 COPY --from=build /console/build/libs/javet* .
